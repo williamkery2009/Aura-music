@@ -109,6 +109,22 @@ jobs:
           echo "settings.gradle patched"
           cat "$SETTINGS"
 
+      - name: Patch android/app/build.gradle
+        run: |
+          BUILDGRADLE="$PROJECT/android/app/build.gradle"
+          # Remove implementation references to dropped plugins
+          sed -i "/capacitor-background-mode/d" "$BUILDGRADLE"
+          sed -i "/capacitor-media/d" "$BUILDGRADLE"
+          echo "app/build.gradle patched"
+
+      - name: Override gradle.properties JVM args
+        run: |
+          PROPS="$PROJECT/android/gradle.properties"
+          # Remove any existing jvmargs (project may have dangerously low -Xmx64m)
+          sed -i "/org.gradle.jvmargs/d" "$PROPS"
+          echo "org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError" >> "$PROPS"
+          echo "gradle.properties JVM args overridden"
+
       # ─────────────────────────────────────────
       # 7. Configure Android SDK path
       # ─────────────────────────────────────────
