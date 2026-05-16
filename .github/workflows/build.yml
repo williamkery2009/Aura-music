@@ -35,7 +35,7 @@ jobs:
       # ── Extract zip ────────────────────────────────────────────────
       - name: Extract project
         run: |
-          unzip -q aura-android-v25.zip
+          unzip -oq aura-android-v25.zip
           if [ -d "aura-android" ]; then
             mv aura-android project
           else
@@ -97,3 +97,5 @@ jobs:
           echo "| **Size** | $SIZE |" >> $GITHUB_STEP_SUMMARY
           echo "| **Download** | Actions → this run → Artifacts → *Aura-v25-debug* |" >> $GITHUB_STEP_SUMMARY
           echo "| **Install** | Extract zip → tap APK → allow unknown sources |" >> $GITHUB_STEP_SUMMARY
+
+
