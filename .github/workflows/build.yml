@@ -14,6 +14,11 @@ jobs:
     name: Build Debug APK
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      # Force JVM heap at the job level — wins over any gradle.properties.
+      # "ClassNotFoundException: -Xmx64m" = project ships broken jvmargs.
+      JAVA_TOOL_OPTIONS: "-Xmx3072m -XX:MaxMetaspaceSize=512m"
+      GRADLE_OPTS: "-Xmx3072m -XX:MaxMetaspaceSize=512m"
 
     steps:
       # ─────────────────────────────────────────
@@ -80,7 +85,7 @@ jobs:
               '@capacitor/local-notifications': '6.0.0',
             };
             pkg.dependencies = keep;
-            pkg.devDependencies = { '@capacitor/cli': '6.0.0' };
+            pkg.devDependencies = { '@capacitor/cli': '6.0.0', 'typescript': 'latest' };
             fs.writeFileSync(p, JSON.stringify(pkg, null, 2));
             console.log('package.json patched');
           "
@@ -92,18 +97,12 @@ jobs:
         working-directory: ${{ env.PROJECT }}
         run: npm install --no-audit --no-fund
 
-      - name: Install TypeScript (required by Capacitor config)
-        working-directory: ${{ env.PROJECT }}
-        run: npm install --save-dev typescript --no-audit --no-fund
-
       # ─────────────────────────────────────────
-      # 6. Patch settings.gradle — remove refs
-      #    to packages we dropped
+      # 6. Patch Gradle files
       # ─────────────────────────────────────────
       - name: Patch android/settings.gradle
         run: |
           SETTINGS="$PROJECT/android/settings.gradle"
-          # Remove lines for dropped packages
           sed -i "/capacitor-background-mode/d" "$SETTINGS"
           sed -i "/capacitor-media/d" "$SETTINGS"
           echo "settings.gradle patched"
@@ -112,18 +111,18 @@ jobs:
       - name: Patch android/app/build.gradle
         run: |
           BUILDGRADLE="$PROJECT/android/app/build.gradle"
-          # Remove implementation references to dropped plugins
           sed -i "/capacitor-background-mode/d" "$BUILDGRADLE"
           sed -i "/capacitor-media/d" "$BUILDGRADLE"
           echo "app/build.gradle patched"
 
-      - name: Override gradle.properties JVM args
+      - name: Nuke bad JVM args from ALL gradle.properties
         run: |
-          PROPS="$PROJECT/android/gradle.properties"
-          # Remove any existing jvmargs (project may have dangerously low -Xmx64m)
-          sed -i "/org.gradle.jvmargs/d" "$PROPS"
-          echo "org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError" >> "$PROPS"
-          echo "gradle.properties JVM args overridden"
+          find "$PROJECT" -name "gradle.properties" | while read f; do
+            echo "Patching: $f"
+            sed -i "/org.gradle.jvmargs/d" "$f"
+            echo 'org.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=512m' >> "$f"
+            cat "$f"
+          done
 
       # ─────────────────────────────────────────
       # 7. Configure Android SDK path
@@ -164,8 +163,7 @@ jobs:
           ./gradlew assembleDebug \
             --no-daemon \
             --parallel \
-            --build-cache \
-            -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=512m"
+            --build-cache
 
       # ─────────────────────────────────────────
       # 11. Upload artifact
