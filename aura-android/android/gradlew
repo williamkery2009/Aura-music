@@ -1,0 +1,21 @@
+#!/bin/sh
+# Gradle start-up script for POSIX systems (auto-generated stub)
+# The real gradlew is downloaded by `gradle wrapper` or build-apk.sh
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+APP_NAME="Gradle"
+APP_BASE_NAME=$(basename "$0")
+GRADLE_WRAPPER_JAR="$SCRIPT_DIR/gradle/wrapper/gradle-wrapper.jar"
+
+if [ ! -f "$GRADLE_WRAPPER_JAR" ]; then
+  echo "Downloading Gradle wrapper..."
+  curl -fsSL "https://services.gradle.org/distributions/gradle-8.6-bin.zip" \
+    -o /tmp/gradle-8.6-bin.zip
+  unzip -q /tmp/gradle-8.6-bin.zip -d /tmp/gradle-dist
+  export PATH="/tmp/gradle-dist/gradle-8.6/bin:$PATH"
+  gradle wrapper --gradle-version 8.6 -p "$SCRIPT_DIR"
+fi
+
+exec java $DEFAULT_JVM_OPTS \
+  -classpath "$GRADLE_WRAPPER_JAR" \
+  org.gradle.wrapper.GradleWrapperMain "$@"

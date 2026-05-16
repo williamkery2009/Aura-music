@@ -1,0 +1,99 @@
+name: Aura APK Builder
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'aura-android-v25.zip'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # ── Extract zip ────────────────────────────────────────────────
+      - name: Extract project
+        run: |
+          unzip -q aura-android-v25.zip
+          if [ -d "aura-android" ]; then
+            mv aura-android project
+          else
+            TOPDIR=$(unzip -l aura-android-v25.zip | awk 'NR==4{print $NF}' | cut -d/ -f1)
+            mv "$TOPDIR" project
+          fi
+          echo "PROJECT=$PWD/project" >> $GITHUB_ENV
+
+      # ── Patch local.properties with SDK path ──────────────────────
+      - name: Patch local.properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$PROJECT/android/local.properties"
+
+      # ── Install npm deps ──────────────────────────────────────────
+      - name: npm install
+        run: npm install --prefer-offline --no-audit --no-fund
+        working-directory: ${{ env.PROJECT }}
+
+      # ── Inject native bridge + copy to assets ────────────────────
+      - name: Build web layer
+        run: node scripts/build.js
+        working-directory: ${{ env.PROJECT }}
+
+      # ── Capacitor sync ────────────────────────────────────────────
+      - name: Capacitor sync
+        run: npx cap sync android --inline
+        working-directory: ${{ env.PROJECT }}
+
+      # ── Accept SDK licenses ───────────────────────────────────────
+      - name: Accept licenses
+        run: yes | sdkmanager --licenses || true
+
+      # ── Build APK ─────────────────────────────────────────────────
+      - name: Build debug APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug \
+            --no-daemon \
+            --parallel \
+            --build-cache \
+            --stacktrace \
+            -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=512m"
+        working-directory: ${{ env.PROJECT }}/android
+
+      # ── Upload artifact ───────────────────────────────────────────
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aura-v25-debug
+          path: ${{ env.PROJECT }}/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: Summary
+        run: |
+          APK="$PROJECT/android/app/build/outputs/apk/debug/app-debug.apk"
+          SIZE=$(du -sh "$APK" | cut -f1)
+          echo "## 🎵 Aura v25 APK ready" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Size** | $SIZE |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Download** | Actions → this run → Artifacts → *Aura-v25-debug* |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Install** | Extract zip → tap APK → allow unknown sources |" >> $GITHUB_STEP_SUMMARY

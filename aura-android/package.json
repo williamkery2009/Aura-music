@@ -1,0 +1,30 @@
+{
+  "name": "aura-music-player",
+  "version": "25.0.0",
+  "description": "Aura — Premium Android Music Player",
+  "private": true,
+  "scripts": {
+    "build":    "node scripts/build.js",
+    "sync":     "npx cap sync android",
+    "open":     "npx cap open android",
+    "run":      "npx cap run android",
+    "apk":      "cd android && ./gradlew assembleRelease",
+    "apk:debug":"cd android && ./gradlew assembleDebug",
+    "full":     "npm run build && npm run sync && npm run apk:debug"
+  },
+  "dependencies": {
+    "@capacitor/android":              "^6.0.0",
+    "@capacitor/core":                 "^6.0.0",
+    "@capacitor/media":                "^6.0.0",
+    "@capacitor-community/background-mode": "^0.3.7",
+    "@capacitor/haptics":              "^6.0.0",
+    "@capacitor/status-bar":           "^6.0.0",
+    "@capacitor/splash-screen":        "^6.0.0",
+    "@capacitor/filesystem":           "^6.0.0",
+    "@capacitor/preferences":          "^6.0.0",
+    "@capacitor/local-notifications":  "^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0"
+  }
+}

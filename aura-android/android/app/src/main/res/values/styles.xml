@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Fully transparent bars — Aura draws edge-to-edge -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <!-- Hardware acceleration -->
+        <item name="android:hardwareAccelerated">true</item>
+        <!-- Keep screen on during playback (also set in code) -->
+        <item name="android:keepScreenOn">false</item>
+    </style>
+
+    <!-- Splash theme shown before WebView loads -->
+    <style name="AppTheme.Splash" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash_bg</item>
+    </style>
+</resources>
