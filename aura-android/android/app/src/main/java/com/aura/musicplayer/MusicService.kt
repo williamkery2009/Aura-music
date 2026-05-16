@@ -270,8 +270,9 @@ class MusicService : Service() {
                 android.R.drawable.ic_media_next, "Next",
                 actionPi(ACTION_NEXT, 3)
             )
-            .setColor(notificationColor)
-                MediaStyle()
+                MediaStyle().setColor(notificationColor)
+.setStyle(
+    MediaStyle()
                     .setMediaSession(mediaSession.sessionToken)
                     .setShowActionsInCompactView(0, 1, 2)
                     .setShowCancelButton(true)
