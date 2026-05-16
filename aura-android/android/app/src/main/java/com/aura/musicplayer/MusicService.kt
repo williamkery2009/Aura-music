@@ -267,18 +267,18 @@ class MusicService : Service() {
             )
             // Next
             .addAction(
-                android.R.drawable.ic_media_next, "Next",
-                actionPi(ACTION_NEXT, 3)
-            )
-                MediaStyle().setColor(notificationColor)
+    android.R.drawable.ic_media_next, "Next",
+    actionPi(ACTION_NEXT, 3)
+)
+.setColor(notificationColor)
 .setStyle(
     MediaStyle()
-                    .setMediaSession(mediaSession.sessionToken)
-                    .setShowActionsInCompactView(0, 1, 2)
-                    .setShowCancelButton(true)
-                    .setCancelButtonIntent(actionPi(ACTION_STOP, 4))
-            )
-            .build()
+        .setMediaSession(mediaSession.sessionToken)
+        .setShowActionsInCompactView(0, 1, 2)
+        .setShowCancelButton(true)
+        .setCancelButtonIntent(actionPi(ACTION_STOP, 4))
+)
+.build()
     }
 
     // ── Helpers ───────────────────────────────────────────────────
