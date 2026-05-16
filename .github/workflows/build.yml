@@ -92,6 +92,10 @@ jobs:
         working-directory: ${{ env.PROJECT }}
         run: npm install --no-audit --no-fund
 
+      - name: Install TypeScript (required by Capacitor config)
+        working-directory: ${{ env.PROJECT }}
+        run: npm install --save-dev typescript --no-audit --no-fund
+
       # ─────────────────────────────────────────
       # 6. Patch settings.gradle — remove refs
       #    to packages we dropped
