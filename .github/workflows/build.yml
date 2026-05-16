@@ -15,8 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      JAVA_TOOL_OPTIONS: "-Xmx3072m -XX:MaxMetaspaceSize=512m"
-      GRADLE_OPTS: "-Xmx3072m -XX:MaxMetaspaceSize=512m"
+      # No quotes — quoted values embed literal " chars into the env var,
+      # which the JVM then tries to load as a class name.
+      JAVA_TOOL_OPTIONS: -Xmx3072m -XX:MaxMetaspaceSize=512m
+      GRADLE_OPTS: -Xmx3072m -XX:MaxMetaspaceSize=512m
 
     steps:
       # ─────────────────────────────────────────
@@ -122,18 +124,18 @@ jobs:
             cat "$f"
           done
 
-      - name: Patch gradlew — remove any hardcoded -Xmx from app args
+      - name: Patch gradlew — strip bad DEFAULT_JVM_OPTS values
         run: |
           GRADLEW="$PROJECT/android/gradlew"
           chmod +x "$GRADLEW"
-          echo "=== gradlew before patch (DEFAULT_JVM_OPTS area) ==="
-          grep -n "Xmx\|DEFAULT_JVM_OPTS\|exec.*java" "$GRADLEW" || true
-          # Strip any -Xmx/-Xms/-XX: flags passed as Gradle app arguments
-          # (distinct from JVM flags — these appear in DEFAULT_JVM_OPTS or exec line)
-          sed -i 's/-Xmx[0-9]*[mgMG]//g' "$GRADLEW"
-          sed -i 's/-Xms[0-9]*[mgMG]//g' "$GRADLEW"
-          echo "=== gradlew after patch ==="
-          grep -n "Xmx\|DEFAULT_JVM_OPTS\|exec.*java" "$GRADLEW" || true
+          echo "=== DEFAULT_JVM_OPTS before patch ==="
+          grep -n 'DEFAULT_JVM_OPTS' "$GRADLEW" || true
+          # Replace the whole DEFAULT_JVM_OPTS assignment with a safe empty value.
+          # JAVA_TOOL_OPTIONS (set at job level) already supplies the correct heap.
+          # Leaving a broken/quoted value here causes ClassNotFoundException.
+          sed -i 's/^DEFAULT_JVM_OPTS=.*/DEFAULT_JVM_OPTS=""/' "$GRADLEW"
+          echo "=== DEFAULT_JVM_OPTS after patch ==="
+          grep -n 'DEFAULT_JVM_OPTS' "$GRADLEW" || true
 
       # ─────────────────────────────────────────
       # 7. Configure Android SDK path
