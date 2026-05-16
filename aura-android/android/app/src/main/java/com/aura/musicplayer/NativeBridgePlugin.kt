@@ -68,6 +68,8 @@ class NativeBridgePlugin : Plugin() {
         ret.put("files", list.joinToString(","))
         call.resolve(ret)
     }
+    @PluginMethod
+    fun getDeviceInfo(call: PluginCall) {
         val ret = JSObject()
         ret.put("ram",    Runtime.getRuntime().maxMemory() / (1024 * 1024))
         ret.put("cores",  Runtime.getRuntime().availableProcessors())
@@ -76,3 +78,4 @@ class NativeBridgePlugin : Plugin() {
         call.resolve(ret)
     }
 }
+
