@@ -43,9 +43,7 @@ jobs:
         run: yes | sdkmanager --licenses 2>/dev/null || true
 
       # ─────────────────────────────────────────
-      # 3. Locate project — use aura-android/
-      #    folder directly (already extracted
-      #    in repo). Zip is ignored here.
+      # 3. Locate project
       # ─────────────────────────────────────────
       - name: Locate project directory
         run: |
@@ -57,26 +55,64 @@ jobs:
             echo "PROJECT=$(realpath $DIR)" >> $GITHUB_ENV
           fi
 
-      - name: Confirm project path
-        run: |
-          echo "Project: $PROJECT"
-          ls "$PROJECT"
+      - name: Confirm project structure
+        run: ls "$PROJECT"
 
       # ─────────────────────────────────────────
-      # 4. Configure Android SDK path
+      # 4. Strip broken/unavailable packages
+      #    and pin working versions
       # ─────────────────────────────────────────
-      - name: Write local.properties
-        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$PROJECT/android/local.properties"
+      - name: Patch package.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const p = '$PROJECT/package.json';
+            const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
+            const keep = {
+              '@capacitor/android':             '6.0.0',
+              '@capacitor/core':                '6.0.0',
+              '@capacitor/cli':                 '6.0.0',
+              '@capacitor/haptics':             '6.0.0',
+              '@capacitor/status-bar':          '6.0.0',
+              '@capacitor/splash-screen':       '6.0.0',
+              '@capacitor/filesystem':          '6.0.0',
+              '@capacitor/preferences':         '6.0.0',
+              '@capacitor/local-notifications': '6.0.0',
+            };
+            pkg.dependencies = keep;
+            pkg.devDependencies = { '@capacitor/cli': '6.0.0' };
+            fs.writeFileSync(p, JSON.stringify(pkg, null, 2));
+            console.log('package.json patched');
+          "
 
       # ─────────────────────────────────────────
       # 5. Install dependencies
       # ─────────────────────────────────────────
       - name: Install npm dependencies
         working-directory: ${{ env.PROJECT }}
-        run: npm install --prefer-offline --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       # ─────────────────────────────────────────
-      # 6. Build web layer
+      # 6. Patch settings.gradle — remove refs
+      #    to packages we dropped
+      # ─────────────────────────────────────────
+      - name: Patch android/settings.gradle
+        run: |
+          SETTINGS="$PROJECT/android/settings.gradle"
+          # Remove lines for dropped packages
+          sed -i "/capacitor-background-mode/d" "$SETTINGS"
+          sed -i "/capacitor-media/d" "$SETTINGS"
+          echo "settings.gradle patched"
+          cat "$SETTINGS"
+
+      # ─────────────────────────────────────────
+      # 7. Configure Android SDK path
+      # ─────────────────────────────────────────
+      - name: Write local.properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$PROJECT/android/local.properties"
+
+      # ─────────────────────────────────────────
+      # 8. Build web layer
       # ─────────────────────────────────────────
       - name: Inject native bridge into index.html
         working-directory: ${{ env.PROJECT }}
@@ -87,7 +123,7 @@ jobs:
         run: npx cap sync android --inline
 
       # ─────────────────────────────────────────
-      # 7. Gradle cache
+      # 9. Gradle cache
       # ─────────────────────────────────────────
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
@@ -99,7 +135,7 @@ jobs:
           restore-keys: gradle-
 
       # ─────────────────────────────────────────
-      # 8. Build APK
+      # 10. Build APK
       # ─────────────────────────────────────────
       - name: Build debug APK
         working-directory: ${{ env.PROJECT }}/android
@@ -112,7 +148,7 @@ jobs:
             -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=512m"
 
       # ─────────────────────────────────────────
-      # 9. Upload artifact
+      # 11. Upload artifact
       # ─────────────────────────────────────────
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -123,7 +159,7 @@ jobs:
           retention-days: 30
 
       # ─────────────────────────────────────────
-      # 10. Job summary
+      # 12. Job summary
       # ─────────────────────────────────────────
       - name: Write job summary
         if: success()
