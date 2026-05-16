@@ -43,23 +43,30 @@ jobs:
         run: yes | sdkmanager --licenses 2>/dev/null || true
 
       # ─────────────────────────────────────────
-      # 3. Extract project zip
+      # 3. Locate project — use aura-android/
+      #    folder directly (already extracted
+      #    in repo). Zip is ignored here.
       # ─────────────────────────────────────────
-      - name: Extract aura-android-v25.zip
+      - name: Locate project directory
         run: |
-          unzip -q -o aura-android-v25.zip -d extracted
-          TOPDIR=$(find extracted -maxdepth 1 -mindepth 1 -type d | head -1)
-          if [ -z "$TOPDIR" ]; then
-            TOPDIR=extracted
+          if [ -d "aura-android" ]; then
+            echo "PROJECT=$GITHUB_WORKSPACE/aura-android" >> $GITHUB_ENV
+          else
+            unzip -q -o aura-android-v25.zip -d _extracted
+            DIR=$(find _extracted -maxdepth 2 -name "package.json" | head -1 | xargs dirname)
+            echo "PROJECT=$(realpath $DIR)" >> $GITHUB_ENV
           fi
-          echo "PROJECT=$(realpath $TOPDIR)" >> $GITHUB_ENV
+
+      - name: Confirm project path
+        run: |
+          echo "Project: $PROJECT"
+          ls "$PROJECT"
 
       # ─────────────────────────────────────────
       # 4. Configure Android SDK path
       # ─────────────────────────────────────────
       - name: Write local.properties
-        run: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$PROJECT/android/local.properties"
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$PROJECT/android/local.properties"
 
       # ─────────────────────────────────────────
       # 5. Install dependencies
@@ -132,4 +139,4 @@ jobs:
           echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "> **Download:** Actions tab → this run → Artifacts → **Aura-v25-debug**" >> $GITHUB_STEP_SUMMARY
-          echo "> Extract the zip → tap the APK → enable Install unknown apps if prompted" >> $GITHUB_STEP_SUMMARY
+          echo "> Extract zip → tap APK → enable *Install unknown apps* if prompted" >> $GITHUB_STEP_SUMMARY
