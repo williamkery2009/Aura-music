@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Aura">
 <link rel="manifest" id="pwa-manifest">
 <title>Aura — Music</title>
-<!-- Aura v25 — Lyrics Cache v2 + Android Memory + Folder Access -->
+<!-- Aura v27 — Dynamic Color Engine · Premium Library · Animation System -->
 <meta name="description" content="Premium mobile music player with gapless playback, karaoke lyrics, playlists and equalizer">
 <script src="https://cdn.jsdelivr.net/npm/music-metadata-browser@2.5.10/dist/music-metadata-browser.umd.min.js"></script>
 <style id="aura-v20-overrides">
@@ -8965,5 +8965,2515 @@ console.log(
 
 })(); // end AuraV25
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     AURA v26 — PREMIUM UI LAYER
+     Apple Music-grade AMOLED dark glassmorphism
+     Floating dock · Glass mini-player · Cinematic sheet · Lyrics
+     ─────────────────────────────────────────────────────────────
+     SAFE: CSS-only override. Zero JS logic changed.
+     All element IDs, Capacitor, MediaSession, IDB untouched.
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="aura-v26-premium-ui">
+
+/* ─── FONT — SF Pro Display mimic via system stack ─────────────── */
+:root {
+  --font-display: -apple-system, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+
+  /* v26 AMOLED palette */
+  --v26-black:        #000000;
+  --v26-void:         #050507;
+  --v26-dark:         #0c0c10;
+  --v26-dark-2:       #111118;
+  --v26-dark-3:       #18181f;
+
+  /* Glass layers */
+  --glass-ultra:      rgba(255,255,255,0.03);
+  --glass-low:        rgba(255,255,255,0.055);
+  --glass-mid:        rgba(255,255,255,0.085);
+  --glass-hi:         rgba(255,255,255,0.12);
+  --glass-border:     rgba(255,255,255,0.07);
+  --glass-border-hi:  rgba(255,255,255,0.13);
+
+  /* Typography */
+  --t-primary:        #ffffff;
+  --t-secondary:      rgba(255,255,255,0.58);
+  --t-tertiary:       rgba(255,255,255,0.30);
+  --t-muted:          rgba(255,255,255,0.20);
+
+  /* Accent (keeps existing --accent: #fc3d6a) */
+  --v26-accent:       #fc3d6a;
+  --v26-accent-glow:  rgba(252,61,106,0.40);
+
+  /* Spring curves */
+  --spring-bouncy:    cubic-bezier(0.34,1.56,0.64,1);
+  --spring-smooth:    cubic-bezier(0.25,1,0.5,1);
+  --ease-out:         cubic-bezier(0.0,0,0.2,1);
+
+  /* Dock dimensions */
+  --dock-h:           80px;
+  --dock-radius:      28px;
+  --dock-margin:      12px;
+  --mini-gap:         8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   1. GLOBAL BASE
+   ═══════════════════════════════════════════════════════════════ */
+body {
+  font-family: var(--font-display);
+  background: var(--v26-black) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. VIEW TABS → FLOATING BOTTOM DOCK
+   Replaces the sticky top tab bar with a floating iOS-style dock
+   at the bottom. Existing .vtab buttons are repositioned.
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+
+  /* Push content so it's not behind the dock */
+  #app { padding-bottom: 0 !important; }
+  #center { overflow: hidden !important; }
+
+  /* ── Dock container ── */
+  #view-tabs {
+    /* Detach from top, float at bottom above mini-player */
+    position: fixed !important;
+    top: auto !important;
+    bottom: calc(var(--mini-h, 72px) + var(--dock-margin) + env(safe-area-inset-bottom, 0px)) !important;
+    left: var(--dock-margin) !important;
+    right: var(--dock-margin) !important;
+    z-index: 55 !important;
+
+    /* Glass pill */
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    gap: 0 !important;
+    padding: 10px 8px !important;
+
+    background: rgba(18,18,24,0.82) !important;
+    backdrop-filter: blur(48px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(48px) saturate(180%) !important;
+    border-radius: var(--dock-radius) !important;
+    border: 1px solid var(--glass-border-hi) !important;
+    box-shadow:
+      0 8px 40px rgba(0,0,0,0.65),
+      0 2px 0 rgba(255,255,255,0.05) inset,
+      0 -1px 0 rgba(0,0,0,0.4) !important;
+    will-change: transform;
+  }
+
+  /* Hide upload/clear mobile tab buttons inside dock — they live in FAB */
+  #mobile-tab-upload,
+  #mobile-tab-clear {
+    display: none !important;
+  }
+
+  /* ── Individual dock tabs ── */
+  .vtab {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    padding: 6px 4px !important;
+    border-radius: 18px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em !important;
+    color: var(--t-tertiary) !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition:
+      color 0.22s var(--ease-out),
+      background 0.22s var(--ease-out),
+      transform 0.28s var(--spring-bouncy) !important;
+    min-height: 52px !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .vtab::before {
+    /* Icon placeholder — inject SVG via data attr via JS trick, or rely on text */
+    display: none !important;
+  }
+  .vtab:active {
+    transform: scale(0.90) !important;
+  }
+  .vtab.active {
+    color: var(--v26-accent) !important;
+    background: rgba(252,61,106,0.10) !important;
+    box-shadow: none !important;
+  }
+  .vtab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--v26-accent);
+    animation: dotPop 0.32s var(--spring-bouncy) both;
+  }
+  @keyframes dotPop {
+    from { transform: translateX(-50%) scale(0); opacity: 0; }
+    to   { transform: translateX(-50%) scale(1); opacity: 1; }
+  }
+
+  /* Add tab icons via pseudo content based on data-view */
+  .vtab[data-view="player"]::before,
+  .vtab[data-view="lyrics"]::before,
+  .vtab[data-view="library"]::before,
+  .vtab[data-view="playlists"]::before {
+    display: block !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    margin-bottom: 2px !important;
+  }
+  .vtab[data-view="player"]::before    { content: '♪'; }
+  .vtab[data-view="lyrics"]::before    { content: '≡'; font-size: 18px !important; }
+  .vtab[data-view="library"]::before   { content: '⊞'; font-size: 16px !important; }
+  .vtab[data-view="playlists"]::before { content: '⊟'; font-size: 16px !important; }
+
+  /* Push view panels down so they don't go under dock */
+  .view-panel.active {
+    padding-bottom: calc(var(--dock-h) + var(--mini-h, 72px) + 16px) !important;
+  }
+  #view-lyrics.active {
+    padding-bottom: calc(var(--dock-h) + var(--mini-h, 72px) + 8px) !important;
+  }
+
+} /* end @media max-width:900px */
+
+
+/* ═══════════════════════════════════════════════════════════════
+   3. MINI PLAYER — Floating glass card
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+
+  #mini-player {
+    /* Float above bottom edge, with side margins */
+    bottom: calc(var(--dock-h) + calc(var(--dock-margin) * 2) + env(safe-area-inset-bottom, 0px)) !important;
+    left: var(--dock-margin) !important;
+    right: var(--dock-margin) !important;
+
+    height: 68px !important;
+    --mini-h: 68px;
+
+    /* Glass card */
+    background: rgba(22,22,30,0.88) !important;
+    backdrop-filter: blur(56px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(56px) saturate(200%) !important;
+    border-radius: 22px !important;
+    border: 1px solid var(--glass-border-hi) !important;
+    box-shadow:
+      0 16px 48px rgba(0,0,0,0.70),
+      0 4px 12px rgba(0,0,0,0.40),
+      0 1px 0 rgba(255,255,255,0.08) inset !important;
+
+    padding: 0 12px 0 10px !important;
+    gap: 10px !important;
+    overflow: hidden !important;
+    will-change: transform;
+
+    /* Subtle active scale feedback */
+    transition: transform 0.28s var(--spring-bouncy), box-shadow 0.28s var(--ease-out) !important;
+  }
+  #mini-player:active {
+    transform: scale(0.978) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.60) !important;
+  }
+
+  /* Progress bar — accent colored, razor thin at very top */
+  #mini-progress {
+    position: absolute !important;
+    top: 0 !important; left: 0 !important; right: 0 !important;
+    height: 2.5px !important;
+    background: rgba(255,255,255,0.07) !important;
+    border-radius: 22px 22px 0 0 !important;
+    overflow: hidden !important;
+  }
+  #mini-progress-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, var(--v26-accent), #ff8c69) !important;
+    border-radius: inherit !important;
+    transition: none !important;
+    will-change: width !important;
+  }
+
+  /* Album art — rounded square with glow */
+  #mini-art {
+    width: 50px !important; height: 50px !important;
+    border-radius: 12px !important;
+    box-shadow:
+      0 4px 16px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(255,255,255,0.07) !important;
+    transition: transform 0.25s var(--spring-bouncy) !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+  }
+  #mini-art img {
+    width: 100% !important; height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Title */
+  #mini-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.2px !important;
+    color: #fff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  #mini-sub {
+    font-size: 11.5px !important;
+    color: var(--t-secondary) !important;
+    margin-top: 1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Controls */
+  .mini-btn {
+    width: 38px !important; height: 38px !important;
+    color: rgba(255,255,255,0.85) !important;
+    transition: transform 0.2s var(--spring-bouncy), opacity 0.15s !important;
+  }
+  .mini-btn:active { transform: scale(0.82) !important; }
+  .mini-btn svg { width: 19px !important; height: 19px !important; }
+
+  /* Play button — white filled circle */
+  #mini-play {
+    width: 42px !important; height: 42px !important;
+    border-radius: 50% !important;
+    background: rgba(255,255,255,0.93) !important;
+    color: #000 !important;
+    box-shadow: 0 2px 12px rgba(255,255,255,0.15) !important;
+    transition: transform 0.25s var(--spring-bouncy), background 0.18s !important;
+    flex-shrink: 0 !important;
+  }
+  #mini-play:active {
+    transform: scale(0.88) !important;
+    background: rgba(255,255,255,0.75) !important;
+  }
+  #mini-play svg { width: 22px !important; height: 22px !important; fill: #000 !important; }
+
+  /* Upload button in mini — minimal glass pill */
+  #mini-upload-btn {
+    width: 34px !important; height: 34px !important;
+    border-radius: 10px !important;
+    background: var(--glass-low) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--t-tertiary) !important;
+  }
+
+} /* end mini-player @media */
+
+
+/* ═══════════════════════════════════════════════════════════════
+   4. MOBILE FULLSCREEN SHEET — Cinematic Apple Music player
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Sheet base */
+#mobile-sheet {
+  background: rgba(4,4,8,0.96) !important;
+  border-radius: 20px 20px 0 0 !important;
+  overflow: hidden !important;
+  will-change: transform !important;
+  transition: transform 0.50s var(--spring-smooth) !important;
+}
+
+/* Background blur art — more saturated, deeper */
+#sheet-art-bg-blur {
+  filter: blur(64px) saturate(160%) brightness(0.30) !important;
+  transform: scale(1.12) translate3d(0,0,0) !important;
+}
+#sheet-art-bg-blur.visible {
+  animation: sheetBgDriftV26 60s ease-in-out infinite alternate !important;
+}
+@keyframes sheetBgDriftV26 {
+  0%   { transform: scale(1.12) translate3d(0,0,0) rotate(0deg); }
+  33%  { transform: scale(1.16) translate3d(1.2%,-0.8%,0) rotate(0.3deg); }
+  66%  { transform: scale(1.13) translate3d(-0.8%,1.2%,0) rotate(-0.2deg); }
+  100% { transform: scale(1.15) translate3d(0.5%,-1.5%,0) rotate(0.5deg); }
+}
+
+/* Richer overlay gradient */
+.sheet-bg-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(2,2,6,0.62) 0%,
+    rgba(2,2,6,0.10) 18%,
+    rgba(2,2,6,0.04) 40%,
+    rgba(2,2,6,0.55) 70%,
+    rgba(2,2,6,0.97) 100%
+  ) !important;
+}
+
+/* Handle pill */
+#sheet-handle {
+  width: 40px !important; height: 4px !important;
+  border-radius: 2px !important;
+  background: rgba(255,255,255,0.25) !important;
+  margin: 14px auto 4px !important;
+}
+
+/* Close button */
+#sheet-close-btn {
+  width: 30px !important; height: 30px !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.10) !important;
+  border: none !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  top: 16px !important; right: 20px !important;
+  transition: background 0.18s, transform 0.2s var(--spring-bouncy) !important;
+}
+#sheet-close-btn:active { transform: scale(0.88) !important; }
+
+/* Header — mini art + track info */
+#sheet-header {
+  padding: 10px 22px 8px !important;
+  gap: 16px !important;
+  align-items: center !important;
+}
+#sheet-mini-art {
+  width: 60px !important; height: 60px !important;
+  border-radius: 13px !important;
+  box-shadow:
+    0 6px 28px rgba(0,0,0,0.65),
+    0 0 0 1px rgba(255,255,255,0.08) !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+#sheet-mini-art img {
+  width: 100% !important; height: 100% !important;
+  object-fit: cover !important;
+}
+#sheet-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.4px !important;
+  color: #fff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+#sheet-artist {
+  font-size: 14px !important;
+  color: var(--t-secondary) !important;
+  margin-top: 2px !important;
+  letter-spacing: -0.1px !important;
+}
+
+/* ── Lyrics container inside sheet ── */
+#sheet-lyrics-container {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.6) 8%,
+    black 20%,
+    black 78%,
+    rgba(0,0,0,0.5) 90%,
+    transparent 100%
+  ) !important;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.6) 8%,
+    black 20%,
+    black 78%,
+    rgba(0,0,0,0.5) 90%,
+    transparent 100%
+  ) !important;
+}
+#sheet-lyrics-container .lyric-line {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.7px !important;
+  line-height: 1.3 !important;
+  padding: 9px 0 !important;
+  transform-origin: left 50% !important;
+  transition:
+    opacity 0.38s var(--ease-out),
+    transform 0.38s var(--spring-smooth),
+    color 0.38s var(--ease-out) !important;
+}
+#sheet-lyrics-container .lyric-line.active {
+  transform: scale(1.028) translate3d(0,0,0) !important;
+  opacity: 1 !important;
+  color: #fff !important;
+  text-shadow: 0 1px 24px rgba(255,255,255,0.08) !important;
+}
+#sheet-lyrics-container .lyric-line.near-past { opacity: 0.38 !important; }
+#sheet-lyrics-container .lyric-line.past      { opacity: 0.14 !important; }
+#sheet-lyrics-container .lyric-line.near-next { opacity: 0.52 !important; }
+#sheet-lyrics-container .lyric-line.future    { opacity: 0.20 !important; }
+#sheet-lyrics-container .lyric-line.far-next  { opacity: 0.12 !important; }
+
+/* ── Bottom controls ── */
+#sheet-bottom {
+  padding: 0 20px !important;
+  padding-bottom: max(22px, env(safe-area-inset-bottom, 22px)) !important;
+}
+
+/* Progress bar — premium accent line */
+#sheet-scrubber-track {
+  height: 3.5px !important;
+  border-radius: 2px !important;
+  background: rgba(255,255,255,0.14) !important;
+  cursor: pointer !important;
+}
+#sheet-scrubber-fill {
+  height: 100% !important;
+  border-radius: 2px !important;
+  background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.85) 100%) !important;
+  will-change: width !important;
+}
+#sheet-scrubber-thumb {
+  width: 14px !important; height: 14px !important;
+  background: #fff !important;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.5) !important;
+  transition: opacity 0.18s, transform 0.2s var(--spring-bouncy) !important;
+}
+#sheet-scrubber-track:hover #sheet-scrubber-thumb,
+#sheet-scrubber-track.dragging #sheet-scrubber-thumb {
+  opacity: 1 !important;
+  transform: translate(-50%,-50%) scale(1.3) !important;
+}
+.sheet-time-row {
+  font-size: 11px !important;
+  color: var(--t-tertiary) !important;
+  margin-top: 6px !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Controls row */
+#sheet-controls {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: 20px !important;
+  padding: 0 4px !important;
+}
+
+/* Secondary control buttons */
+.sheet-ctrl {
+  width: 50px !important; height: 50px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: rgba(255,255,255,0.70) !important;
+  transition:
+    color 0.18s,
+    transform 0.25s var(--spring-bouncy),
+    background 0.18s !important;
+}
+.sheet-ctrl:active { transform: scale(0.84) !important; }
+.sheet-ctrl:hover  { background: var(--glass-low) !important; color: #fff !important; }
+.sheet-ctrl.active { color: var(--v26-accent) !important; }
+.sheet-ctrl.active svg {
+  filter: drop-shadow(0 0 5px rgba(252,61,106,0.55)) !important;
+}
+.sheet-ctrl svg { width: 26px !important; height: 26px !important; }
+
+/* Prev / Next — slightly bigger */
+#sheet-prev svg, #sheet-next svg { width: 30px !important; height: 30px !important; }
+#sheet-prev, #sheet-next { color: rgba(255,255,255,0.85) !important; }
+
+/* Play button — large glowing pill */
+#sheet-play-btn {
+  width: 74px !important; height: 74px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  color: #000 !important;
+  box-shadow:
+    0 6px 28px rgba(255,255,255,0.18),
+    0 2px 8px rgba(255,255,255,0.10) !important;
+  transition: transform 0.28s var(--spring-bouncy), box-shadow 0.22s var(--ease-out) !important;
+}
+#sheet-play-btn:active {
+  transform: scale(0.90) !important;
+  box-shadow: 0 2px 10px rgba(255,255,255,0.08) !important;
+}
+#sheet-play-btn svg { width: 32px !important; height: 32px !important; fill: #000 !important; }
+
+/* Extras row — volume + EQ + upload */
+#sheet-extras {
+  margin-top: 16px !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+.sheet-vol-wrap svg { fill: var(--t-tertiary) !important; }
+
+#sheet-upload-btn,
+#eq-btn {
+  width: 42px !important; height: 42px !important;
+  border-radius: 13px !important;
+  background: var(--glass-low) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--t-secondary) !important;
+  transition: background 0.18s, color 0.18s, transform 0.2s var(--spring-bouncy) !important;
+}
+#sheet-upload-btn:active,
+#eq-btn:active { transform: scale(0.88) !important; background: var(--glass-mid) !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   5. FULL LYRICS PAGE (view-lyrics)
+   Cinematic scrolling, large type, active highlight
+   ═══════════════════════════════════════════════════════════════ */
+
+#view-lyrics {
+  display: flex;
+  flex-direction: column;
+  background: transparent !important;
+}
+
+/* Lyrics toolbar */
+#lyrics-toolbar {
+  padding: 14px 20px 8px !important;
+  gap: 10px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  background: rgba(6,6,10,0.60) !important;
+  backdrop-filter: blur(32px) !important;
+  -webkit-backdrop-filter: blur(32px) !important;
+  flex-shrink: 0 !important;
+}
+
+#lrc-upload-btn {
+  width: 36px !important; height: 36px !important;
+  border-radius: 10px !important;
+  background: var(--glass-low) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+#lrc-label {
+  font-size: 12px !important;
+  color: var(--t-tertiary) !important;
+  letter-spacing: 0.01em !important;
+}
+#lyric-settings-btn {
+  background: var(--glass-low) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--t-secondary) !important;
+  border-radius: 12px !important;
+  font-size: 11px !important;
+  transition: background 0.18s, color 0.18s !important;
+}
+#lyric-settings-btn:hover { background: var(--glass-mid) !important; color: #fff !important; }
+
+/* Lyrics container */
+#lyrics-container {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.7) 10%,
+    black 22%,
+    black 75%,
+    rgba(0,0,0,0.6) 88%,
+    transparent 100%
+  ) !important;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.7) 10%,
+    black 22%,
+    black 75%,
+    rgba(0,0,0,0.6) 88%,
+    transparent 100%
+  ) !important;
+}
+#lyrics-inner {
+  padding: 40px 28px 120px !important;
+}
+
+/* Lyric lines — large cinematic type */
+.lyric-line {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.8px !important;
+  line-height: 1.28 !important;
+  margin-bottom: 2px !important;
+  padding: 8px 0 !important;
+  transform-origin: left 50% !important;
+  will-change: transform, opacity !important;
+  transition:
+    opacity 0.40s var(--ease-out),
+    transform 0.40s var(--spring-smooth),
+    color 0.35s var(--ease-out) !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+.lyric-line.active {
+  opacity: 1 !important;
+  color: #ffffff !important;
+  transform: scale(1.030) translate3d(0,0,0) !important;
+  text-shadow: 0 1px 28px rgba(255,255,255,0.08) !important;
+}
+.lyric-line.near-past { opacity: 0.42 !important; transform: scale(0.992) translate3d(0,0,0) !important; }
+.lyric-line.past      { opacity: 0.15 !important; transform: scale(0.985) translate3d(0,0,0) !important; }
+.lyric-line.near-next { opacity: 0.56 !important; transform: scale(0.996) translate3d(0,0,0) !important; }
+.lyric-line.future    { opacity: 0.22 !important; transform: scale(0.988) translate3d(0,0,0) !important; }
+.lyric-line.far-next  { opacity: 0.12 !important; }
+
+/* Loading state */
+#lyrics-loading {
+  font-size: 14px !important;
+  color: var(--t-tertiary) !important;
+  padding: 40px 28px !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Queue button — glass pill */
+#queue-btn {
+  width: 36px !important; height: 36px !important;
+  border-radius: 10px !important;
+  background: var(--glass-low) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--t-secondary) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background 0.18s, transform 0.2s var(--spring-bouncy) !important;
+}
+#queue-btn:active { transform: scale(0.88) !important; }
+#queue-btn svg { width: 16px !important; height: 16px !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   6. MAIN PLAYER VIEW — Desktop / landscape layout polish
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Artwork */
+#artwork-wrap {
+  transition: transform 0.35s var(--spring-bouncy) !important;
+}
+#artwork {
+  border-radius: 24px !important;
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.65),
+    0 8px 24px rgba(0,0,0,0.40),
+    0 0 0 1px rgba(255,255,255,0.06) !important;
+  overflow: hidden !important;
+  transition: transform 0.4s var(--spring-bouncy), box-shadow 0.4s var(--ease-out) !important;
+}
+#artwork-wrap.playing #artwork {
+  box-shadow:
+    0 28px 72px rgba(0,0,0,0.70),
+    0 8px 28px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(255,255,255,0.08) !important;
+}
+
+/* Track info */
+#track-title {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.5px !important;
+  color: #fff !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+}
+#track-artist {
+  font-size: 15px !important;
+  color: var(--t-secondary) !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.1px !important;
+}
+#track-album {
+  font-size: 13px !important;
+  color: var(--t-tertiary) !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Progress bar */
+#scrubber-track {
+  height: 4px !important;
+  border-radius: 2px !important;
+  background: rgba(255,255,255,0.14) !important;
+}
+#scrubber-fill {
+  background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.85) 100%) !important;
+}
+#scrubber-thumb {
+  width: 14px !important; height: 14px !important;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.6) !important;
+  transition: opacity 0.18s, transform 0.2s var(--spring-bouncy) !important;
+}
+#scrubber-track:hover { height: 5px !important; }
+
+/* Controls */
+.ctrl-btn {
+  border-radius: 50% !important;
+  transition: color 0.18s, background 0.18s, transform 0.25s var(--spring-bouncy) !important;
+}
+.ctrl-btn:active { transform: scale(0.83) !important; }
+
+/* Play button — big filled circle */
+#play-btn {
+  width: 58px !important; height: 58px !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.95) !important;
+  color: #000 !important;
+  box-shadow: 0 4px 20px rgba(255,255,255,0.18) !important;
+  transition: transform 0.28s var(--spring-bouncy), background 0.18s, box-shadow 0.22s !important;
+}
+#play-btn:active {
+  transform: scale(0.88) !important;
+  background: rgba(255,255,255,0.80) !important;
+}
+#play-btn svg { fill: #000 !important; }
+#icon-play, #icon-pause { width: 26px !important; height: 26px !important; }
+
+/* Prev / Next buttons */
+#btn-prev svg, #btn-next svg { width: 28px !important; height: 28px !important; }
+
+/* Shuffle / Repeat — accent when active */
+#btn-shuffle.active, #btn-repeat.active { color: var(--v26-accent) !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   7. EQ PANEL — Premium glass bottom sheet
+   ═══════════════════════════════════════════════════════════════ */
+
+#eq-panel {
+  border-radius: 28px 28px 0 0 !important;
+  background: rgba(14,14,22,0.97) !important;
+  backdrop-filter: blur(56px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(56px) saturate(180%) !important;
+  border-top: 1px solid var(--glass-border-hi) !important;
+}
+
+.eq-preset-btn {
+  border-radius: 18px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 7px 15px !important;
+  border: 1px solid var(--glass-border) !important;
+  background: transparent !important;
+  color: var(--t-secondary) !important;
+  transition: background 0.18s, color 0.18s, border-color 0.18s !important;
+}
+.eq-preset-btn.active {
+  background: rgba(252,61,106,0.14) !important;
+  color: var(--v26-accent) !important;
+  border-color: rgba(252,61,106,0.28) !important;
+}
+
+.eq-toggle {
+  border-radius: 16px !important;
+  background: var(--glass-ultra) !important;
+  border: 1px solid var(--glass-border) !important;
+  padding: 12px 16px !important;
+  transition: background 0.18s !important;
+}
+.eq-toggle.on {
+  background: rgba(252,61,106,0.09) !important;
+  border-color: rgba(252,61,106,0.22) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. LIBRARY VIEW — Cards and sections polish
+   ═══════════════════════════════════════════════════════════════ */
+
+.lib-header h1 {
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  letter-spacing: -1.0px !important;
+}
+.lib-cat-item {
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
+  margin: 0 12px 6px !important;
+  background: var(--glass-ultra) !important;
+  border: 1px solid transparent !important;
+  border-bottom: none !important;
+  transition: background 0.18s, transform 0.22s var(--spring-bouncy) !important;
+}
+.lib-cat-item:active {
+  transform: scale(0.97) !important;
+  background: var(--glass-low) !important;
+}
+.lib-cat-name { font-size: 16px !important; font-weight: 500 !important; }
+
+/* Recent grid cards */
+.lib-recent-grid {
+  gap: 12px !important;
+  padding: 0 14px 140px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9. PLAYLIST VIEW — Smart cards
+   ═══════════════════════════════════════════════════════════════ */
+
+.pl-smart-card {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  transition: transform 0.25s var(--spring-bouncy) !important;
+}
+.pl-smart-card:active { transform: scale(0.96) !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   10. TOAST + STATUS INDICATORS
+   ═══════════════════════════════════════════════════════════════ */
+
+#toast-container > div,
+.toast {
+  border-radius: 16px !important;
+  background: rgba(30,30,38,0.95) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid var(--glass-border-hi) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* IDB restore banner */
+#idb-status {
+  background: rgba(22,22,32,0.92) !important;
+  border-radius: 14px !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--glass-border) !important;
+  font-size: 12px !important;
+  padding: 8px 14px !important;
+}
+
+/* Audio focus indicator */
+#audio-focus-indicator {
+  border-radius: 16px !important;
+  background: rgba(22,22,32,0.94) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid var(--glass-border-hi) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   11. FLOATING UPLOAD FAB — refined
+   ═══════════════════════════════════════════════════════════════ */
+
+#mobile-upload-fab {
+  /* Position above dock + mini */
+  bottom: calc(var(--dock-h) + var(--mini-h, 68px) + calc(var(--dock-margin) * 2.5) + env(safe-area-inset-bottom, 0px)) !important;
+  right: 18px !important;
+  width: 50px !important; height: 50px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(145deg, #fc3d6a, #e0295a) !important;
+  box-shadow:
+    0 6px 24px rgba(252,61,106,0.52),
+    0 2px 8px rgba(0,0,0,0.30) !important;
+  transition: transform 0.28s var(--spring-bouncy), box-shadow 0.22s !important;
+}
+#mobile-upload-fab:active {
+  transform: scale(0.90) !important;
+  box-shadow: 0 3px 12px rgba(252,61,106,0.38) !important;
+}
+#mobile-upload-fab:hover {
+  transform: scale(1.06) !important;
+  box-shadow: 0 8px 30px rgba(252,61,106,0.65) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   12. UPLOAD SCREEN — glass card center
+   ═══════════════════════════════════════════════════════════════ */
+
+#upload-screen {
+  background: transparent !important;
+}
+#upload-screen .upload-icon {
+  background: var(--glass-low) !important;
+  border: 1px solid var(--glass-border-hi) !important;
+  border-radius: 24px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   13. SCROLLBAR — invisible on mobile, subtle on desktop
+   ═══════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 0 !important; background: transparent !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   14. QUEUE PANEL — premium glass sheet
+   ═══════════════════════════════════════════════════════════════ */
+
+#queue-panel,
+.queue-panel {
+  border-radius: 28px 28px 0 0 !important;
+  background: rgba(12,12,18,0.97) !important;
+  backdrop-filter: blur(56px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(56px) saturate(180%) !important;
+  border-top: 1px solid var(--glass-border-hi) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   15. LYRIC SETTINGS PANEL — match premium glass
+   ═══════════════════════════════════════════════════════════════ */
+
+#lyric-settings-panel {
+  background: rgba(12,12,18,0.97) !important;
+  backdrop-filter: blur(56px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(56px) saturate(180%) !important;
+  border-top: 1px solid var(--glass-border-hi) !important;
+  border-radius: 28px 28px 0 0 !important;
+}
+.lsp-close {
+  border-radius: 16px !important;
+  background: var(--glass-low) !important;
+  border: 1px solid var(--glass-border) !important;
+  transition: background 0.18s !important;
+}
+.lsp-mode-btn {
+  border-radius: 20px !important;
+  font-size: 12px !important;
+}
+.lsp-mode-btn.active {
+  background: rgba(252,61,106,0.14) !important;
+  color: var(--v26-accent) !important;
+  border-color: rgba(252,61,106,0.28) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   16. PLAYLIST ITEMS — refined rows
+   ═══════════════════════════════════════════════════════════════ */
+
+.playlist-item,
+#playlist li,
+.pl-track {
+  border-radius: 14px !important;
+  transition: background 0.18s, transform 0.22s var(--spring-bouncy) !important;
+}
+.playlist-item:active,
+#playlist li:active {
+  background: var(--glass-low) !important;
+  transform: scale(0.98) !important;
+}
+.playlist-item.active,
+#playlist li.active {
+  background: rgba(252,61,106,0.08) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   17. PWA BANNER — glass pill at top
+   ═══════════════════════════════════════════════════════════════ */
+
+#pwa-banner {
+  border-radius: 0 0 20px 20px !important;
+  background: rgba(18,18,24,0.95) !important;
+  backdrop-filter: blur(32px) !important;
+  -webkit-backdrop-filter: blur(32px) !important;
+  border-bottom: 1px solid var(--glass-border-hi) !important;
+  border-left: 1px solid var(--glass-border) !important;
+  border-right: 1px solid var(--glass-border) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   18. SIDE PANEL (desktop playlist sidebar) — glass
+   ═══════════════════════════════════════════════════════════════ */
+
+#sidebar {
+  background: rgba(8,8,14,0.85) !important;
+  border-right: 1px solid var(--glass-border) !important;
+  backdrop-filter: blur(32px) !important;
+  -webkit-backdrop-filter: blur(32px) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   19. VIEW TABS DESKTOP — keep top for desktop
+   ═══════════════════════════════════════════════════════════════ */
+@media (min-width: 901px) {
+  #view-tabs {
+    background: rgba(6,6,12,0.80) !important;
+    backdrop-filter: blur(40px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+  }
+  .vtab.active {
+    background: rgba(252,61,106,0.10) !important;
+    color: var(--v26-accent) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   20. SEARCH (lib-search) — refined input
+   ═══════════════════════════════════════════════════════════════ */
+
+#lib-search-input {
+  border-radius: 14px !important;
+  background: var(--glass-low) !important;
+  border: 1px solid var(--glass-border) !important;
+  font-size: 15px !important;
+  font-family: var(--font-display) !important;
+  color: #fff !important;
+  transition: border-color 0.18s, box-shadow 0.18s !important;
+}
+#lib-search-input:focus {
+  border-color: var(--glass-border-hi) !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.04) !important;
+  outline: none !important;
+}
+
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     AURA v27 — DYNAMIC COLOR ENGINE · PREMIUM LIBRARY · ANIMATION SYSTEM
+     ═══════════════════════════════════════════════════════════════════ -->
+<style id="aura-v27-styles">
+
+/* ════════════════════════════════════════════════════
+   v27 DESIGN TOKENS — Dynamic Color System
+   ════════════════════════════════════════════════════ */
+:root {
+  /* Dynamic palette — updated by color engine */
+  --dce-primary:   #fc3d6a;
+  --dce-secondary: #ff8c69;
+  --dce-tertiary:  #7b2ff7;
+  --dce-surface:   rgba(20,8,24,0.96);
+  --dce-surface-2: rgba(28,10,32,0.92);
+  --dce-text-on:   #ffffff;
+  --dce-r: 252; --dce-g: 61; --dce-b: 106;
+
+  /* Glass system */
+  --glass-ultra:    rgba(255,255,255,0.042);
+  --glass-low:      rgba(255,255,255,0.07);
+  --glass-mid:      rgba(255,255,255,0.11);
+  --glass-hi:       rgba(255,255,255,0.17);
+  --glass-border:   rgba(255,255,255,0.09);
+  --glass-border-hi:rgba(255,255,255,0.16);
+
+  /* Spring curves */
+  --spring-snappy:  cubic-bezier(0.34,1.56,0.64,1);
+  --spring-smooth:  cubic-bezier(0.25,1,0.5,1);
+  --spring-gentle:  cubic-bezier(0.22,1,0.36,1);
+  --ease-out:       cubic-bezier(0,0,0.2,1);
+
+  /* Typography */
+  --font-display: -apple-system,'SF Pro Display','Helvetica Neue',system-ui,sans-serif;
+  --font-rounded: -apple-system,'SF Pro Rounded','Helvetica Neue',system-ui,sans-serif;
+
+  /* Spacing */
+  --page-h-pad: 22px;
+  --section-gap: 32px;
+
+  /* Library */
+  --lib-card-radius: 16px;
+  --lib-art-radius:  14px;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 ANIMATED BACKGROUND TRANSITION LAYER
+   ════════════════════════════════════════════════════ */
+#dce-bg-canvas {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; opacity: 0;
+  transition: opacity 1.8s var(--ease-out);
+  will-change: opacity;
+  overflow: hidden;
+}
+#dce-bg-canvas.active { opacity: 1; }
+#dce-bg-canvas::before,
+#dce-bg-canvas::after {
+  content: '';
+  position: absolute; inset: -40%;
+  border-radius: 50%;
+  will-change: transform, opacity;
+  transition: background 2.4s var(--ease-out), opacity 2.4s var(--ease-out);
+}
+#dce-bg-canvas::before {
+  background: radial-gradient(
+    ellipse 80% 80% at 25% 25%,
+    rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.18) 0%,
+    transparent 65%
+  );
+  animation: dceBefore 28s ease-in-out infinite alternate;
+}
+#dce-bg-canvas::after {
+  background: radial-gradient(
+    ellipse 70% 70% at 75% 75%,
+    rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.10) 0%,
+    transparent 60%
+  );
+  animation: dceAfter 36s ease-in-out infinite alternate;
+}
+@keyframes dceBefore {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(5%,-4%,0) scale(1.12); }
+  100% { transform: translate3d(-3%,5%,0) scale(1.06); }
+}
+@keyframes dceAfter {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(-6%,3%,0) scale(1.10); }
+  100% { transform: translate3d(4%,-5%,0) scale(1.08); }
+}
+
+/* Adaptive shadow injection — applied to artwork */
+#artwork-wrap.dce-active .artwork-inner,
+#artwork-wrap.dce-active #artwork-img {
+  filter: drop-shadow(0 16px 48px rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.52))
+          drop-shadow(0 4px 16px rgba(0,0,0,0.4));
+  transition: filter 1.2s var(--ease-out);
+}
+
+/* Mini player live accent glow */
+#mini-player.dce-active {
+  box-shadow:
+    0 -1px 0 rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.25),
+    0 -8px 32px rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.12) !important;
+  transition: box-shadow 1.2s var(--ease-out);
+}
+
+/* Scrubber fill — accent color from art */
+#scrubber-fill,
+#sheet-scrubber-fill {
+  background: linear-gradient(90deg,
+    rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.9),
+    rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.65)
+  ) !important;
+  transition: background 1.2s var(--ease-out);
+}
+#scrubber-thumb,
+#sheet-scrubber-thumb {
+  background: rgb(var(--dce-r),var(--dce-g),var(--dce-b)) !important;
+  box-shadow: 0 2px 12px rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.55) !important;
+  transition: background 1.2s var(--ease-out), box-shadow 1.2s var(--ease-out);
+}
+
+/* Play bars accent */
+.play-bars i {
+  background: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.9) !important;
+}
+.track-item.active::after {
+  background: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.95) !important;
+}
+
+/* Active track / playlist item */
+.track-item.active { background: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.08) !important; }
+.track-item.active .t-name { color: rgb(var(--dce-r),var(--dce-g),var(--dce-b)) !important; }
+
+/* ════════════════════════════════════════════════════
+   v27 ARTWORK — MORPHING & SPRING PHYSICS
+   ════════════════════════════════════════════════════ */
+@keyframes artMorphIn {
+  0%   { transform: scale(0.94) translate3d(0,8px,0); opacity: 0; filter: blur(6px); }
+  60%  { filter: blur(0px); }
+  100% { transform: scale(1) translate3d(0,0,0); opacity: 1; }
+}
+@keyframes artMorphOut {
+  from { transform: scale(1); opacity: 1; }
+  to   { transform: scale(0.96) translate3d(0,-6px,0); opacity: 0; }
+}
+
+.artwork-morph-in {
+  animation: artMorphIn 0.55s var(--spring-smooth) both !important;
+}
+.artwork-morph-out {
+  animation: artMorphOut 0.28s var(--ease-out) both !important;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 SHARED LAYOUT TRANSITIONS
+   ════════════════════════════════════════════════════ */
+.view-panel {
+  transition: opacity 0.32s var(--ease-out), transform 0.32s var(--spring-gentle);
+  transform-origin: top center;
+}
+.view-panel:not(.active) {
+  opacity: 0;
+  pointer-events: none;
+}
+.view-panel.active {
+  opacity: 1;
+  transform: translate3d(0,0,0) scale(1);
+}
+
+/* Fade-through transitions between views */
+@keyframes viewFadeIn {
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes viewFadeOut {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to   { opacity: 0; transform: translate3d(0, -8px, 0); }
+}
+
+.view-entering {
+  animation: viewFadeIn 0.35s var(--spring-smooth) both;
+}
+.view-leaving {
+  animation: viewFadeOut 0.22s var(--ease-out) both;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 LIBRARY PAGE — Apple Music Inspired, Premium
+   ════════════════════════════════════════════════════ */
+
+/* Rebuild the library scrollable container */
+#view-library {
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+}
+#view-library.active { display: flex; }
+
+/* Library main scrollable area */
+#lib-main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  /* Momentum scroll on iOS */
+  overscroll-behavior: contain;
+  padding-bottom: 32px;
+}
+#lib-main-content::-webkit-scrollbar { display: none; }
+
+/* ── Large Cinematic Header ── */
+.lib-header {
+  padding: 20px var(--page-h-pad) 8px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.lib-header h1 {
+  font-family: var(--font-display);
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  letter-spacing: -1.2px !important;
+  line-height: 1 !important;
+  color: #fff;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+}
+.lib-edit-btn {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: rgb(var(--dce-r),var(--dce-g),var(--dce-b)) !important;
+  background: none !important;
+  border: none !important;
+  padding: 4px 2px !important;
+  cursor: pointer;
+  opacity: 0.92;
+  transition: opacity 0.18s;
+}
+.lib-edit-btn:hover { opacity: 1; }
+.lib-edit-btn:active { opacity: 0.6; }
+
+/* ── Search Bar — refined ── */
+.lib-search-wrap {
+  padding: 6px var(--page-h-pad) 14px;
+  flex-shrink: 0;
+}
+.lib-search-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.10) !important;
+  border-radius: 14px !important;
+  padding: 10px 14px !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  transition: background 0.18s, border-color 0.18s;
+}
+.lib-search-inner:focus-within {
+  background: rgba(255,255,255,0.13) !important;
+  border-color: rgba(255,255,255,0.16) !important;
+}
+.lib-search-inner svg {
+  width: 16px; height: 16px;
+  fill: rgba(255,255,255,0.4);
+  flex-shrink: 0;
+}
+#lib-search-input {
+  flex: 1;
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  font-size: 16px !important;
+  font-family: var(--font-display) !important;
+  color: #fff !important;
+  caret-color: rgb(var(--dce-r),var(--dce-g),var(--dce-b));
+}
+#lib-search-input::placeholder { color: rgba(255,255,255,0.35) !important; }
+#lib-search-clear {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(255,255,255,0.22); border: none; cursor: pointer;
+  display: none; align-items: center; justify-content: center;
+  color: rgba(0,0,0,0.7); font-size: 11px; font-weight: 700;
+  flex-shrink: 0; transition: background 0.18s;
+}
+#lib-search-input:not(:placeholder-shown) ~ #lib-search-clear { display: flex; }
+#lib-search-clear:hover { background: rgba(255,255,255,0.32); }
+
+/* ── Sections ── */
+.lib-section {
+  padding: 0 0 var(--section-gap);
+  overflow: hidden;
+}
+.lib-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 var(--page-h-pad) 14px;
+}
+.lib-section-header h2 {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.5px !important;
+  color: #fff;
+  line-height: 1;
+}
+.lib-section-see-all {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(var(--dce-r),var(--dce-g),var(--dce-b));
+  cursor: pointer;
+  opacity: 0.88;
+  transition: opacity 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.lib-section-see-all:hover { opacity: 1; }
+.lib-section-see-all:active { opacity: 0.55; }
+
+/* ── Categories — premium list rows ── */
+.lib-categories {
+  padding: 0 var(--page-h-pad);
+  margin-bottom: var(--section-gap);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lib-cat-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.18s;
+  will-change: transform;
+}
+.lib-cat-item:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+.lib-cat-item:active { opacity: 0.6; }
+.lib-cat-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: rgba(252,61,106,0.16);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s var(--spring-snappy);
+}
+.lib-cat-item:active .lib-cat-icon { transform: scale(0.92); }
+.lib-cat-icon svg { width: 20px; height: 20px; fill: rgba(252,61,106,0.9); }
+.lib-cat-name {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+.lib-cat-chevron {
+  color: rgba(255,255,255,0.22);
+}
+.lib-cat-chevron svg { width: 16px; height: 16px; fill: currentColor; }
+
+/* ── Recently Added — Large card grid ── */
+.lib-recent-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 0 var(--page-h-pad);
+}
+
+.lib-album-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.22s var(--spring-snappy), opacity 0.18s;
+  /* GPU layer */
+  will-change: transform;
+}
+.lib-album-card:active {
+  transform: scale(0.96) !important;
+  opacity: 0.85;
+}
+
+.lib-album-art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--lib-art-radius);
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+  position: relative;
+  /* Premium shadow stack */
+  box-shadow:
+    0 4px 16px rgba(0,0,0,0.35),
+    0 1px 4px rgba(0,0,0,0.2),
+    inset 0 0 0 1px rgba(255,255,255,0.07);
+  transition: box-shadow 0.4s var(--ease-out), transform 0.4s var(--spring-smooth);
+}
+.lib-album-art img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Lazy load optimization */
+  loading: lazy;
+  transition: opacity 0.3s var(--ease-out);
+}
+.lib-album-art svg {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 30px; height: 30px;
+  fill: rgba(255,255,255,0.22);
+}
+.lib-album-info {
+  padding: 0 2px;
+}
+.lib-album-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.2px;
+  line-height: 1.3;
+}
+.lib-album-artist {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 400;
+}
+
+/* ── Artists horizontal scroll ── */
+.lib-artists-grid {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 16px;
+  padding: 0 var(--page-h-pad);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.lib-artists-grid::-webkit-scrollbar { display: none; }
+
+.lib-artist-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.22s var(--spring-snappy), opacity 0.18s;
+  width: 76px;
+}
+.lib-artist-card:active {
+  transform: scale(0.93);
+  opacity: 0.78;
+}
+.lib-artist-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.09);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.1);
+  transition: box-shadow 0.3s var(--ease-out);
+}
+.lib-artist-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.lib-artist-avatar svg {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 28px; height: 28px;
+  fill: rgba(255,255,255,0.25);
+}
+.lib-artist-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 76px;
+}
+
+/* ── Library row items (Recently Played / Most Played) ── */
+.lib-row-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px var(--page-h-pad);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.16s, transform 0.2s var(--spring-snappy);
+  border-radius: 0;
+  position: relative;
+}
+.lib-row-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: calc(var(--page-h-pad) + 54px); right: var(--page-h-pad);
+  height: 1px;
+  background: rgba(255,255,255,0.055);
+}
+.lib-row-item:last-child::after { display: none; }
+.lib-row-item:active {
+  background: rgba(255,255,255,0.045);
+  transform: scale(0.99);
+}
+
+.lib-row-art {
+  width: 50px; height: 50px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+.lib-row-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lib-row-art svg { width: 20px; height: 20px; fill: rgba(255,255,255,0.25); margin: 15px; }
+
+.lib-row-meta { flex: 1; min-width: 0; }
+.lib-row-title {
+  font-size: 15px; font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  letter-spacing: -0.2px;
+}
+.lib-row-sub {
+  font-size: 12.5px; color: rgba(255,255,255,0.42);
+  margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lib-row-count {
+  font-size: 12px; color: rgba(255,255,255,0.28);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* ── Staggered entry animations for library items ── */
+@keyframes libItemIn {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.lib-album-card { animation: libItemIn 0.42s var(--spring-smooth) both; }
+.lib-album-card:nth-child(1) { animation-delay: 0.03s; }
+.lib-album-card:nth-child(2) { animation-delay: 0.06s; }
+.lib-album-card:nth-child(3) { animation-delay: 0.09s; }
+.lib-album-card:nth-child(4) { animation-delay: 0.12s; }
+.lib-album-card:nth-child(5) { animation-delay: 0.15s; }
+.lib-album-card:nth-child(6) { animation-delay: 0.18s; }
+.lib-album-card:nth-child(n+7) { animation-delay: 0.21s; }
+
+.lib-artist-card { animation: libItemIn 0.38s var(--spring-smooth) both; }
+.lib-artist-card:nth-child(1) { animation-delay: 0.04s; }
+.lib-artist-card:nth-child(2) { animation-delay: 0.08s; }
+.lib-artist-card:nth-child(3) { animation-delay: 0.12s; }
+.lib-artist-card:nth-child(n+4) { animation-delay: 0.16s; }
+
+.lib-row-item { animation: libItemIn 0.36s var(--spring-smooth) both; }
+.lib-row-item:nth-child(1) { animation-delay: 0.04s; }
+.lib-row-item:nth-child(2) { animation-delay: 0.08s; }
+.lib-row-item:nth-child(3) { animation-delay: 0.12s; }
+.lib-row-item:nth-child(n+4) { animation-delay: 0.16s; }
+
+/* ════════════════════════════════════════════════════
+   v27 GESTURE INTERACTIONS — Spring-physics touch
+   ════════════════════════════════════════════════════ */
+
+/* Artwork pulse on tap */
+@keyframes artTapPulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.965); }
+  100% { transform: scale(1); }
+}
+.art-tap-pulse {
+  animation: artTapPulse 0.38s var(--spring-snappy) !important;
+}
+
+/* Play button press — cinematic */
+@keyframes playBtnPress {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.88); }
+  70%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.play-btn-press {
+  animation: playBtnPress 0.4s var(--spring-snappy) !important;
+}
+
+/* Track-item swipe hint glow */
+.track-item:active::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 12px;
+  background: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.08);
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 MINI PLAYER — Premium glass, dynamic accent
+   ════════════════════════════════════════════════════ */
+#mini-player {
+  background: rgba(10,10,16,0.92) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  border-top: 1px solid rgba(255,255,255,0.07) !important;
+}
+
+/* Mini art — rounded with accent glow */
+#mini-art {
+  width: 44px !important; height: 44px !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  box-shadow: 0 3px 14px rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.28) !important;
+  flex-shrink: 0 !important;
+  transition: box-shadow 1s var(--ease-out) !important;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 MOBILE FULL-PLAYER — Cinematic improvements
+   ════════════════════════════════════════════════════ */
+
+/* Artwork container — immersive & morphing */
+#artwork-wrap {
+  transition: transform 0.52s var(--spring-smooth) !important;
+}
+#artwork-wrap.playing {
+  transform: scale(1.0) !important; /* controlled by JS breathing */
+}
+
+/* Dynamic accent on sheet scrubber */
+#sheet-scrubber-track {
+  background: rgba(255,255,255,0.14) !important;
+}
+
+/* Sheet bottom controls — adaptive accent */
+#sheet-play {
+  transition: background 0.8s var(--ease-out), box-shadow 0.8s var(--ease-out) !important;
+}
+
+/* Track title — subtle gradient on long titles */
+#track-title {
+  background: linear-gradient(90deg, #fff 60%, rgba(255,255,255,0.55) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 PERFORMANCE — GPU optimization layer
+   ════════════════════════════════════════════════════ */
+
+/* promote static blurs to their own GPU layers */
+#mini-player,
+#view-tabs,
+#mobile-sheet,
+.view-panel {
+  isolation: isolate;
+}
+
+/* Critical compositing hints */
+.lib-album-art,
+.lib-artist-avatar,
+.lib-album-card {
+  contain: layout style;
+  transform: translate3d(0,0,0);
+}
+
+/* Virtualization hint for long lists */
+#playlist,
+#lib-main-content,
+#pl-detail-tracks {
+  contain: content;
+}
+
+/* content-visibility on off-screen sections */
+.lib-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 300px;
+}
+.lib-section.lib-section-visible {
+  content-visibility: visible;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 PLAYLIST VIEW — elevated cards
+   ════════════════════════════════════════════════════ */
+
+.pl-card {
+  border-radius: 14px !important;
+  padding: 12px 10px !important;
+  border-bottom: none !important;
+  transition: background 0.18s, transform 0.22s var(--spring-snappy) !important;
+  margin-bottom: 4px;
+}
+.pl-card:hover { background: rgba(255,255,255,0.05) !important; }
+.pl-card:active {
+  background: rgba(255,255,255,0.07) !important;
+  transform: scale(0.98) !important;
+}
+.pl-card-art {
+  width: 58px !important; height: 58px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
+}
+
+/* Smart playlist cards — larger, more premium */
+.pl-smart-card {
+  border-radius: 18px !important;
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  padding: 18px 16px !important;
+  transition: background 0.2s, transform 0.22s var(--spring-snappy), box-shadow 0.2s !important;
+}
+.pl-smart-card:hover {
+  background: rgba(255,255,255,0.08) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18) !important;
+}
+.pl-smart-card:active {
+  transform: scale(0.96) !important;
+}
+.pl-smart-icon {
+  width: 42px !important; height: 42px !important;
+  border-radius: 12px !important;
+  margin-bottom: 14px !important;
+}
+.pl-smart-name {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.3px !important;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 VIEW TABS / DOCK — Premium pill navigation
+   ════════════════════════════════════════════════════ */
+
+/* Mobile dock — floating glass pill above mini player */
+@media (max-width: 900px) {
+  #view-tabs {
+    padding: 8px 10px !important;
+    gap: 0 !important;
+    justify-content: space-around !important;
+  }
+  .vtab {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 3px !important;
+    padding: 7px 14px !important;
+    border-radius: 14px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em !important;
+    transition: background 0.22s var(--spring-smooth), color 0.22s !important;
+  }
+  .vtab.active {
+    background: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.14) !important;
+    color: rgb(var(--dce-r),var(--dce-g),var(--dce-b)) !important;
+  }
+  .vtab-icon {
+    transition: transform 0.3s var(--spring-snappy) !important;
+  }
+  .vtab.active .vtab-icon {
+    transform: scale(1.08) !important;
+  }
+  .vtab:active .vtab-icon {
+    transform: scale(0.88) !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   v27 TOAST NOTIFICATION — dynamic accent
+   ════════════════════════════════════════════════════ */
+#toast {
+  background: rgba(18,18,26,0.95) !important;
+  backdrop-filter: blur(32px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
+  border: 1px solid rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.18) !important;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.04) !important;
+  transition: border-color 0.8s var(--ease-out) !important;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 SCROLL MOMENTUM & OVERSCROLL GLOW
+   ════════════════════════════════════════════════════ */
+#view-library,
+#view-playlists,
+#view-lyrics {
+  overscroll-behavior-y: contain;
+}
+
+/* ════════════════════════════════════════════════════
+   v27 EMPTY STATE — styled with art
+   ════════════════════════════════════════════════════ */
+.v27-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 32px;
+  gap: 12px;
+  text-align: center;
+}
+.v27-empty-icon {
+  width: 64px; height: 64px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 8px;
+}
+.v27-empty-icon svg { width: 30px; height: 30px; fill: rgba(255,255,255,0.3); }
+.v27-empty-title { font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.75); letter-spacing: -0.4px; }
+.v27-empty-sub { font-size: 14px; color: rgba(255,255,255,0.35); line-height: 1.5; max-width: 220px; }
+
+/* ════════════════════════════════════════════════════
+   v27 ANIMATED WAVEFORM — music note idle state
+   ════════════════════════════════════════════════════ */
+@keyframes v27IdleBounce {
+  0%,100% { transform: scaleY(0.4); }
+  50%     { transform: scaleY(1); }
+}
+.v27-idle-waveform {
+  display: flex; align-items: flex-end; gap: 3px; height: 20px;
+}
+.v27-idle-bar {
+  width: 3px; border-radius: 2px;
+  background: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.7);
+  animation: v27IdleBounce 0.9s ease-in-out infinite;
+}
+.v27-idle-bar:nth-child(1) { animation-delay: 0s; height: 14px; }
+.v27-idle-bar:nth-child(2) { animation-delay: 0.15s; height: 20px; }
+.v27-idle-bar:nth-child(3) { animation-delay: 0.30s; height: 10px; }
+.v27-idle-bar:nth-child(4) { animation-delay: 0.45s; height: 18px; }
+
+/* ════════════════════════════════════════════════════
+   v27 UTILITY OVERRIDES
+   ════════════════════════════════════════════════════ */
+
+/* Scrollbar universal hide */
+* { scrollbar-width: none !important; }
+*::-webkit-scrollbar { display: none !important; }
+
+/* Prettier focus states */
+button:focus-visible {
+  outline: 2px solid rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.7) !important;
+  outline-offset: 2px !important;
+}
+
+/* Accent color on playlist active items */
+.pl-track-row.active .pl-track-title {
+  color: rgb(var(--dce-r),var(--dce-g),var(--dce-b)) !important;
+}
+.pl-detail-play-btn.primary {
+  background: rgba(255,255,255,0.95) !important;
+  transition: transform 0.22s var(--spring-snappy), box-shadow 0.22s !important;
+}
+.pl-detail-play-btn.primary:hover {
+  transform: scale(1.04) !important;
+  box-shadow: 0 6px 24px rgba(255,255,255,0.2) !important;
+}
+.pl-detail-play-btn.secondary {
+  background: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.14) !important;
+  color: rgb(var(--dce-r),var(--dce-g),var(--dce-b)) !important;
+  border: 1px solid rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.28) !important;
+  transition: transform 0.22s var(--spring-snappy) !important;
+}
+
+/* EQ panel — accent sliders */
+.eq-slider::-webkit-slider-thumb {
+  background: rgb(var(--dce-r),var(--dce-g),var(--dce-b)) !important;
+}
+.eq-slider {
+  background: linear-gradient(90deg,
+    rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.8) var(--eq-fill,50%),
+    rgba(255,255,255,0.12) var(--eq-fill,50%)
+  ) !important;
+}
+.eq-preset-btn.active {
+  background: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.16) !important;
+  color: rgb(var(--dce-r),var(--dce-g),var(--dce-b)) !important;
+  border-color: rgba(var(--dce-r),var(--dce-g),var(--dce-b),0.3) !important;
+}
+
+</style>
+
+<!-- AURA v27 — DYNAMIC COLOR ENGINE SCRIPT -->
+<script id="aura-v27-dce">(function(){
+'use strict';
+
+/* ══════════════════════════════════════════════════════
+   DCE — Dynamic Color Engine
+   Canvas-based color extraction → CSS variable injection
+   Android-safe: throttled, idle-callback gated
+   ══════════════════════════════════════════════════════ */
+
+const DCE_CANVAS_SIZE = 32; // tiny sample — fast on mobile
+const DCE_TRANSITION  = 1.4; // seconds for CSS transitions
+
+let _dceCanvas, _dceCtx;
+let _dceCurrentArt = null;
+let _dceAnimFrame  = null;
+let _dcePending    = false;
+
+function _initDCECanvas() {
+  _dceCanvas = document.createElement('canvas');
+  _dceCanvas.width  = DCE_CANVAS_SIZE;
+  _dceCanvas.height = DCE_CANVAS_SIZE;
+  _dceCtx = _dceCanvas.getContext('2d', { willReadFrequently: true, alpha: false });
+}
+
+/* Quantise to avoid sampling noise */
+function _quantise(v) { return Math.round(v / 8) * 8; }
+
+/* Extract dominant vibrant color from artwork */
+function _extractPalette(imgEl) {
+  if (!_dceCtx) _initDCECanvas();
+  try {
+    _dceCtx.drawImage(imgEl, 0, 0, DCE_CANVAS_SIZE, DCE_CANVAS_SIZE);
+  } catch(e) { return null; }
+
+  let data;
+  try { data = _dceCtx.getImageData(0, 0, DCE_CANVAS_SIZE, DCE_CANVAS_SIZE).data; }
+  catch(e) { return null; }
+
+  // Bucket colors by hue region (12 buckets of 30° each)
+  const buckets = new Array(12).fill(null).map(() => ({ r: 0, g: 0, b: 0, count: 0, sat: 0 }));
+  const total = data.length / 4;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i], g = data[i+1], b = data[i+2];
+    // Skip near-black, near-white, very desaturated
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    const brightness = max / 255;
+    const sat = max > 0 ? (max - min) / max : 0;
+    if (brightness < 0.10 || brightness > 0.95 || sat < 0.18) continue;
+
+    // Hue bucket
+    let h = 0;
+    if (max !== min) {
+      const d = max - min;
+      if      (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
+      else if (max === g) h = ((b - r) / d + 2) * 60;
+      else                h = ((r - g) / d + 4) * 60;
+    }
+    const bucket = Math.floor(h / 30) % 12;
+    const b2 = buckets[bucket];
+    // Weighted by saturation (vibrant colors dominate)
+    const w = sat * sat;
+    b2.r += r * w; b2.g += g * w; b2.b += b * w;
+    b2.count += w; b2.sat += sat;
+  }
+
+  // Find most vibrant populated bucket
+  let best = null, bestScore = -1;
+  for (const bkt of buckets) {
+    if (bkt.count < 0.5) continue;
+    const score = bkt.sat * bkt.count;
+    if (score > bestScore) { bestScore = score; best = bkt; }
+  }
+  if (!best) return { r: 252, g: 61, b: 106 }; // fallback accent
+
+  const r2 = Math.round(best.r / best.count);
+  const g2 = Math.round(best.g / best.count);
+  const b2 = Math.round(best.b / best.count);
+
+  // Ensure minimum saturation / vibrancy
+  const max2 = Math.max(r2,g2,b2), min2 = Math.min(r2,g2,b2);
+  const sat2 = max2 > 0 ? (max2 - min2) / max2 : 0;
+  if (sat2 < 0.25 || max2 < 40) return { r: 252, g: 61, b: 106 };
+
+  // Ensure it's bright enough for dark backgrounds
+  const luminance = 0.299*r2 + 0.587*g2 + 0.114*b2;
+  if (luminance < 55) {
+    // Boost — multiply toward white
+    const boost = 55 / Math.max(luminance, 1);
+    return {
+      r: Math.min(255, Math.round(r2 * boost)),
+      g: Math.min(255, Math.round(g2 * boost)),
+      b: Math.min(255, Math.round(b2 * boost)),
+    };
+  }
+  return { r: r2, g: g2, b: b2 };
+}
+
+/* Apply extracted colors to CSS variables */
+function _applyDCEPalette(palette) {
+  const root = document.documentElement;
+  const { r, g, b } = palette;
+  const accent = `rgb(${r},${g},${b})`;
+  const accentDim = `rgba(${r},${g},${b},0.18)`;
+
+  // Smooth animated transition
+  root.style.setProperty('--dce-r', r);
+  root.style.setProperty('--dce-g', g);
+  root.style.setProperty('--dce-b', b);
+  root.style.setProperty('--dce-primary', accent);
+  root.style.setProperty('--accent', accent);
+  root.style.setProperty('--accent-dim', accentDim);
+  root.style.setProperty('--accent-glow', `rgba(${r},${g},${b},0.38)`);
+  root.style.setProperty('--accent-subtle', `rgba(${r},${g},${b},0.08)`);
+
+  // Legacy vars for existing code
+  root.style.setProperty('--dyn-r', r);
+  root.style.setProperty('--dyn-g', g);
+  root.style.setProperty('--dyn-b2', b);
+  root.style.setProperty('--dyn-accent', accent);
+
+  // Derive warm/cool bg tones from accent
+  const bgR = Math.max(6, Math.round(r * 0.07));
+  const bgG = Math.max(5, Math.round(g * 0.05));
+  const bgB = Math.max(10, Math.round(b * 0.09));
+  root.style.setProperty('--dyn-a', `rgb(${bgR + 12},${bgG + 5},${bgB + 15})`);
+  root.style.setProperty('--dyn-b', `rgb(${Math.round(r*0.04) + 5},${Math.round(g*0.04) + 7},${Math.round(b*0.12) + 18})`);
+  root.style.setProperty('--dyn-c', `rgb(${Math.round(r*0.06) + 8},${Math.round(g*0.03) + 4},${Math.round(b*0.1) + 12})`);
+
+  // Theme-color meta
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) {
+    metaTheme.content = `rgb(${Math.round(r*0.22)},${Math.round(g*0.15)},${Math.round(b*0.22)})`;
+  }
+
+  // Activate dynamic background
+  const dceBg = document.getElementById('dce-bg-canvas');
+  if (dceBg) dceBg.classList.add('active');
+
+  // Activate adaptive shadows on artwork
+  const artWrap = document.getElementById('artwork-wrap');
+  if (artWrap) artWrap.classList.add('dce-active');
+
+  // Activate mini player glow
+  const miniPlayer = document.getElementById('mini-player');
+  if (miniPlayer) miniPlayer.classList.add('dce-active');
+}
+
+/* Main extraction entry point — called when art changes */
+function extractAndApplyColors(artUrl) {
+  if (!artUrl || artUrl === _dceCurrentArt) return;
+  _dceCurrentArt = artUrl;
+
+  const run = () => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const palette = _extractPalette(img);
+      if (palette) _applyDCEPalette(palette);
+    };
+    img.onerror = () => {}; // graceful — keep previous colors
+    img.src = artUrl;
+  };
+
+  // Gate on idle callback (saves CPU on Redmi/Android)
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(run, { timeout: 1200 });
+  } else {
+    setTimeout(run, 250);
+  }
+}
+
+/* Reset to brand accent when no art */
+function resetDCEColors() {
+  _dceCurrentArt = null;
+  _applyDCEPalette({ r: 252, g: 61, b: 106 });
+  const dceBg = document.getElementById('dce-bg-canvas');
+  if (dceBg) dceBg.classList.remove('active');
+  const artWrap = document.getElementById('artwork-wrap');
+  if (artWrap) artWrap.classList.remove('dce-active');
+  const miniPlayer = document.getElementById('mini-player');
+  if (miniPlayer) miniPlayer.classList.remove('dce-active');
+}
+
+// Expose globally so existing art application code can call it
+window._dceExtract = extractAndApplyColors;
+window._dceReset   = resetDCEColors;
+
+// Patch the existing extractColors function (v19 color engine)
+const _origExtractColors = window.extractColors;
+window.extractColors = function() {
+  // Call original for backward compat (legacy vars, vis accent)
+  if (_origExtractColors) {
+    try { _origExtractColors.apply(this, arguments); } catch(e) {}
+  }
+  // Also run our enhanced DCE
+  const artImg = document.getElementById('artwork-img');
+  if (artImg && artImg.src && artImg.style.display !== 'none') {
+    extractAndApplyColors(artImg.src);
+  }
+};
+
+// Patch showPlaceholder to reset DCE
+const _origShowPlaceholder = window.showPlaceholder;
+window.showPlaceholder = function() {
+  if (_origShowPlaceholder) {
+    try { _origShowPlaceholder.apply(this, arguments); } catch(e) {}
+  }
+  resetDCEColors();
+};
+
+// Patch applyArt to trigger DCE
+const _origApplyArt = window.applyArt;
+window.applyArt = function(artUrl, track) {
+  if (_origApplyArt) {
+    try { _origApplyArt.apply(this, arguments); } catch(e) {}
+  }
+  if (artUrl) extractAndApplyColors(artUrl);
+};
+
+console.log('%c🎨 DCE v27 active', 'color:#fc3d6a;font-weight:700;background:#0a0010;padding:2px 8px;border-radius:4px;');
+
+})();
+</script>
+
+<!-- AURA v27 — ANIMATION SYSTEM + LIBRARY UPGRADE SCRIPT -->
+<script id="aura-v27-anim">(function(){
+'use strict';
+
+/* ══════════════════════════════════════════════
+   VIEW TRANSITION SYSTEM — Fade-through
+   ══════════════════════════════════════════════ */
+const _origSwitchView = window.switchView;
+window.switchView = function(viewName, ...args) {
+  const panels = document.querySelectorAll('.view-panel');
+  const incoming = document.getElementById('view-' + viewName);
+
+  // Fade out active panels
+  panels.forEach(p => {
+    if (p.classList.contains('active') && p !== incoming) {
+      p.classList.add('view-leaving');
+      setTimeout(() => { p.classList.remove('view-leaving'); }, 240);
+    }
+  });
+
+  // Fade in new panel
+  if (incoming && !incoming.classList.contains('active')) {
+    incoming.classList.add('view-entering');
+    setTimeout(() => incoming.classList.remove('view-entering'), 380);
+  }
+
+  if (_origSwitchView) {
+    try { return _origSwitchView.apply(this, [viewName, ...args]); } catch(e) {}
+  }
+};
+
+/* ══════════════════════════════════════════════
+   ARTWORK MORPHING — spring in on track change
+   ══════════════════════════════════════════════ */
+const _origApplyArtAnim = window.applyArt;
+let _prevArtUrl = null;
+
+window.applyArt = function(artUrl, track) {
+  const artImg = document.getElementById('artwork-img');
+
+  if (artImg && artUrl && artUrl !== _prevArtUrl) {
+    artImg.classList.remove('artwork-morph-in', 'artwork-morph-out');
+    // trigger reflow
+    void artImg.offsetWidth;
+    artImg.classList.add('artwork-morph-in');
+    setTimeout(() => artImg.classList.remove('artwork-morph-in'), 600);
+    _prevArtUrl = artUrl;
+  }
+
+  if (_origApplyArtAnim) {
+    try { return _origApplyArtAnim.apply(this, arguments); } catch(e) {}
+  }
+};
+
+/* ══════════════════════════════════════════════
+   PLAY BUTTON — spring press feedback
+   ══════════════════════════════════════════════ */
+function _addPlayBtnFeedback() {
+  const playBtns = ['btn-play', 'sheet-play', 'mini-play'];
+  playBtns.forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('pointerdown', () => {
+      btn.classList.remove('play-btn-press');
+      void btn.offsetWidth;
+      btn.classList.add('play-btn-press');
+      setTimeout(() => btn.classList.remove('play-btn-press'), 420);
+    }, { passive: true });
+  });
+}
+
+/* ══════════════════════════════════════════════
+   ARTWORK TAP — pulse animation
+   ══════════════════════════════════════════════ */
+function _addArtworkTap() {
+  const artWrap = document.getElementById('artwork-wrap');
+  if (!artWrap) return;
+  artWrap.addEventListener('pointerdown', () => {
+    artWrap.classList.remove('art-tap-pulse');
+    void artWrap.offsetWidth;
+    artWrap.classList.add('art-tap-pulse');
+    setTimeout(() => artWrap.classList.remove('art-tap-pulse'), 400);
+  }, { passive: true });
+}
+
+/* ══════════════════════════════════════════════
+   LIBRARY VIEW — rebuild with v27 premium layout
+   ══════════════════════════════════════════════ */
+
+function buildLibRowV27(track, idx, count) {
+  const art = track.art
+    ? `<img src="${_esc(track.art)}" loading="lazy" onerror="this.style.display='none'">`
+    : `<svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`;
+  const sub = [track.artist, track.album].filter(Boolean).join(' · ') || 'Unknown Artist';
+  const countHtml = count > 0
+    ? `<span class="lib-row-count">${count}×</span>` : '';
+  return `<div class="lib-row-item" onclick="loadTrackFromLib(${idx})">
+    <div class="lib-row-art">${art}</div>
+    <div class="lib-row-meta">
+      <div class="lib-row-title">${_esc(track.displayTitle || track.name)}</div>
+      <div class="lib-row-sub">${_esc(sub)}</div>
+    </div>
+    ${countHtml}
+  </div>`;
+}
+
+function _esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Patch buildLibRow to use v27 version
+window.buildLibRow = buildLibRowV27;
+
+/* ── Rebuild Recently Added with large cards ── */
+const _origBuildLibrary = window.buildLibraryView;
+window.buildLibraryView = function() {
+  if (_origBuildLibrary) {
+    try { _origBuildLibrary.apply(this, arguments); } catch(e) {}
+  }
+
+  // Re-render "Recently Added" with the v27 two-column grid
+  const grid = document.getElementById('lib-recent-grid');
+  if (!grid || !window.state) return;
+
+  const tracks = window.state.tracks || [];
+  const seen = new Set();
+  const items = [];
+  for (let i = tracks.length - 1; i >= 0 && items.length < 12; i--) {
+    const t = tracks[i];
+    const key = (t.album && t.artist) ? `${t.album}|${t.artist}` : t.displayTitle || t.name;
+    if (!seen.has(key)) { seen.add(key); items.push({ track: t, idx: i }); }
+  }
+
+  if (!items.length) {
+    grid.innerHTML = `<div class="v27-empty-state" style="grid-column:1/-1">
+      <div class="v27-empty-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+      <div class="v27-empty-title">No Music Yet</div>
+      <div class="v27-empty-sub">Add songs from the Library tab to see them here</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = items.map(({ track: t, idx }) => {
+    const artSrc = t.art
+      ? `<img src="${_esc(t.art)}" loading="lazy" onerror="this.style.display='none'">`
+      : `<svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`;
+    return `<div class="lib-album-card" onclick="loadTrackFromLib(${idx})">
+      <div class="lib-album-art">${artSrc}</div>
+      <div class="lib-album-info">
+        <div class="lib-album-title">${_esc(t.album || t.displayTitle || t.name)}</div>
+        <div class="lib-album-artist">${_esc(t.artist || 'Unknown')}</div>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+/* ══════════════════════════════════════════════
+   INJECT DCE BACKGROUND CANVAS ELEMENT
+   ══════════════════════════════════════════════ */
+function _injectDCEBg() {
+  if (document.getElementById('dce-bg-canvas')) return;
+  const canvas = document.createElement('div');
+  canvas.id = 'dce-bg-canvas';
+  document.body.insertBefore(canvas, document.body.firstChild);
+}
+
+/* ══════════════════════════════════════════════
+   INTERSECTION OBSERVER — lib sections
+   lazy content-visibility
+   ══════════════════════════════════════════════ */
+function _initLibSectionVisibility() {
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('lib-section-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '100px' });
+
+  document.querySelectorAll('.lib-section').forEach(el => io.observe(el));
+}
+
+/* ══════════════════════════════════════════════
+   PERFORMANCE — memoize artwork render
+   ══════════════════════════════════════════════ */
+const _artMemoCache = new WeakMap();
+function _memoArtRender(track) {
+  if (_artMemoCache.has(track)) return _artMemoCache.get(track);
+  const html = track.art
+    ? `<img src="${_esc(track.art)}" loading="lazy">`
+    : `<svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`;
+  _artMemoCache.set(track, html);
+  return html;
+}
+window._memoArtRender = _memoArtRender;
+
+/* ══════════════════════════════════════════════
+   HAPTIC FEEDBACK — enhanced
+   ══════════════════════════════════════════════ */
+function _haptic(pattern) {
+  if (window._auraVibrate) window._auraVibrate(pattern);
+  else if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+// Haptic on artwork tap
+function _addHapticArtTap() {
+  const art = document.getElementById('artwork-wrap');
+  if (art) {
+    art.addEventListener('pointerdown', () => _haptic([4]), { passive: true });
+  }
+}
+
+// Haptic on track selection
+const _origLoadTrack = window.loadTrack;
+if (_origLoadTrack) {
+  window.loadTrack = function(idx, shouldPlay) {
+    _haptic([6]);
+    return _origLoadTrack.apply(this, arguments);
+  };
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════ */
+function _v27Init() {
+  _injectDCEBg();
+  _addPlayBtnFeedback();
+  _addArtworkTap();
+  _addHapticArtTap();
+  _initLibSectionVisibility();
+
+  // Run initial lib section visibility after content loaded
+  setTimeout(_initLibSectionVisibility, 800);
+
+  // Re-observe when library view is opened
+  document.querySelectorAll('.vtab[data-view="library"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(_initLibSectionVisibility, 300);
+    }, { passive: true });
+  });
+
+  console.log('%c✨ Aura v27 — Dynamic Color Engine + Animation System', 'font-size:13px;font-weight:700;color:#fff;background:#fc3d6a;padding:3px 10px;border-radius:6px;');
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _v27Init);
+} else {
+  setTimeout(_v27Init, 50);
+}
+
+})();
+</script>
+
+<!-- v26 JS micro-patch: dock tab icons from SVG for better look -->
+<script id="aura-v26-patch">(function(){
+  // Wait for DOM ready then enhance tab icons with inline SVGs
+  function injectTabIcons() {
+    const iconMap = {
+      player: `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 3a9 9 0 1 0 0 18A9 9 0 0 0 12 3zm0 2a7 7 0 1 1 0 14A7 7 0 0 1 12 5zm-1 3.5v7l5-3.5-5-3.5z"/></svg>`,
+      lyrics: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3 5h18v2H3V5zm0 4h18v2H3V9zm0 4h12v2H3v-2zm0 4h8v2H3v-2z"/></svg>`,
+      library: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/></svg>`,
+      playlists: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zm13.5-4l-7.5 5V7l7.5 5z"/></svg>`,
+    };
+
+    document.querySelectorAll('.vtab[data-view]').forEach(btn => {
+      const view = btn.dataset.view;
+      if (!iconMap[view]) return;
+      // Only inject if no existing icon span
+      if (btn.querySelector('.vtab-icon')) return;
+      const span = document.createElement('span');
+      span.className = 'vtab-icon';
+      span.innerHTML = iconMap[view];
+      span.style.cssText = 'display:flex;align-items:center;justify-content:center;line-height:1;margin-bottom:2px;';
+      btn.prepend(span);
+    });
+  }
+
+  // Remove ::before pseudo fallback now that we have real SVGs
+  const noBeforeStyle = document.createElement('style');
+  noBeforeStyle.textContent = `
+    .vtab[data-view]::before { display:none !important; }
+    .vtab[data-view]::after  { display:none; }
+    .vtab.active::after      { display:block; }
+  `;
+  document.head.appendChild(noBeforeStyle);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectTabIcons);
+  } else {
+    injectTabIcons();
+  }
+
+  // ── Mini-player floating position fix ──────────────────────
+  // Ensure --mini-h var stays in sync with actual dock position
+  function syncMiniH() {
+    const mini = document.getElementById('mini-player');
+    const dock = document.getElementById('view-tabs');
+    if (!mini || !dock) return;
+    const mh = mini.offsetHeight || 68;
+    document.documentElement.style.setProperty('--mini-h', mh + 'px');
+  }
+  window.addEventListener('resize', syncMiniH, { passive: true });
+  setTimeout(syncMiniH, 400);
+
+  // ── Haptic on dock tab tap ──────────────────────────────────
+  document.querySelectorAll('.vtab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (window._auraVibrate) window._auraVibrate([4]);
+    }, { passive: true });
+  });
+
+  console.log('%c🎵 Aura v27 — Premium UI active', 'font-size:13px;font-weight:700;color:#fc3d6a;background:#0a0010;padding:3px 10px;border-radius:5px;');
+})();
+</script>
+
 </body>
 </html>
