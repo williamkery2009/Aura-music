@@ -123,21 +123,25 @@ I’m interested in creating projects that balance design, usability, and functi
 
 # Currently Exploring
 
-```txt
-• Frontend architecture
-• Modern React ecosystem
-• Responsive UI systems
-• Motion and interaction design
-• Android experiences
-• Real-world project development
+<div align="left">
+
+- Frontend architecture  
+- Modern React ecosystem  
+- Responsive UI systems  
+- Motion and interaction design  
+- Android experiences  
+- Real-world project development  
+
+</div>
 
 ---
 
-Closing
+# Closing
 
-<div align="center">Thank you for visiting my profile.
+<div align="center">
+
+Thank you for visiting my profile.
 
 I’m always open to learning, collaboration, and meaningful conversations around technology, design, and development.
 
 </div>
-```
