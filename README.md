@@ -1,6 +1,6 @@
 <div align="center">
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=280&color=0:0F172A,25:312E81,50:6D28D9,75:7C3AED,100:38BDF8&text=William%20Kery&fontSize=54&fontAlignY=38&fontColor=ffffff&animation=fadeIn&desc=Student%20Developer%20•%20UI%2FUX%20Enthusiast%20•%20Creative%20Builder&descAlignY=58&descSize=20" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=300&color=0:0F172A,25:312E81,50:6D28D9,75:7C3AED,100:38BDF8&text=William%20Kery&fontSize=56&fontAlignY=40&fontColor=ffffff&animation=fadeIn&desc=Student%20Developer%20•%20Creative%20UI%2FUX%20Explorer&descAlignY=60&descSize=20" />
 
 <br/>
 
@@ -8,7 +8,7 @@
 
 <br/><br/>
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=24&pause=1200&color=A78BFA&center=true&vCenter=true&width=850&lines=Student+%26+Self-Taught+Developer;Building+modern+digital+experiences;Frontend+Development+%7C+Android+Customization;Passionate+about+UI%2FUX+and+creative+technology;Always+learning.+Always+building.)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=24&pause=1200&color=A78BFA&center=true&vCenter=true&width=850&lines=Student+%26+Self-Taught+Developer;Building+modern+digital+experiences;Frontend+Development+%7C+UI%2FUX+Design;Android+Customization+Enthusiast;Passionate+about+creative+technology)](https://git.io/typing-svg)
 
 </div>
 
@@ -16,17 +16,17 @@
 
 # 👨‍💻 About Me
 
-Hi, I'm **William Kery** — a student developer from India with a strong interest in modern UI/UX, frontend engineering, and creative digital experiences.
+Hi, I'm **William Kery** — a student developer from India who enjoys building modern, visually polished, and user-focused digital experiences.
 
-I enjoy building visually polished interfaces, experimenting with app concepts, and learning through real-world projects. My focus is on creating experiences that are not only functional, but also clean, immersive, and enjoyable to use.
+I’m passionate about frontend development, UI/UX design, Android customization, and creative interfaces. Most of my learning comes from experimenting with projects, rebuilding ideas, and exploring how design and technology work together to create memorable experiences.
 
-Beyond development, I enjoy exploring design trends, Android customization, and innovative technologies that shape the future of digital products.
+I believe great software should not only function well — it should also feel smooth, intuitive, and enjoyable to use.
 
 ---
 
 <div align="center">
 
-## ⚡ Quick Overview
+## ⚡ Developer Profile
 
 </div>
 
@@ -37,24 +37,24 @@ Beyond development, I enjoy exploring design trends, Android customization, and 
 ### 🚀 Interests
 
 - Frontend Development
-- Modern UI/UX Design
-- Android Customization
-- Creative App Experiences
+- UI/UX Design
+- Android Experiences
 - Interactive Interfaces
-- Digital Product Design
+- Creative Digital Products
+- Modern Web Technologies
 
 </td>
 
 <td width="50%">
 
-### 🎯 Currently Focused On
+### 🎯 Current Focus
 
-- Improving frontend skills
-- Building polished projects
-- Learning modern frameworks
+- Improving frontend engineering skills
+- Building polished real-world projects
+- Learning modern frameworks & tools
 - Exploring AI-powered experiences
-- Writing cleaner code
-- Growing as a developer
+- Creating cleaner and smoother UI
+- Growing as a developer every day
 
 </td>
 </tr>
@@ -66,13 +66,13 @@ Beyond development, I enjoy exploring design trends, Android customization, and 
 
 <div align="center">
 
-### Frontend Technologies
+### Frontend
 
 <img src="https://skillicons.dev/icons?i=html,css,js,ts,react,nextjs,tailwind&theme=dark" />
 
 <br/><br/>
 
-### Backend & Databases
+### Backend & Database
 
 <img src="https://skillicons.dev/icons?i=nodejs,express,python,firebase,mongodb&theme=dark" />
 
@@ -110,67 +110,52 @@ Beyond development, I enjoy exploring design trends, Android customization, and 
 
 ---
 
-# 📊 GitHub Analytics
+# 🧠 Philosophy
 
 <div align="center">
 
-<img width="49%" src="https://github-readme-stats.vercel.app/api?username=williamkery2009&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0D1117&title_color=A78BFA&icon_color=38BDF8" />
-
-<img width="49%" src="https://github-readme-stats.vercel.app/api/top-langs/?username=williamkery2009&layout=compact&theme=tokyonight&hide_border=true&bg_color=0D1117&title_color=A78BFA" />
-
-<br/><br/>
-
-<img width="98%" src="https://github-readme-streak-stats.herokuapp.com/?user=williamkery2009&theme=tokyonight&hide_border=true&background=0D1117&stroke=A78BFA&ring=A78BFA&fire=38BDF8&currStreakLabel=FFFFFF" />
+> *“Good design makes technology feel effortless.”*
 
 </div>
 
----
-
-# 🏆 GitHub Achievements
-
-<div align="center">
-
-<img src="https://github-profile-trophy.vercel.app/?username=williamkery2009&theme=algolia&no-frame=true&row=1&column=6&margin-w=15&margin-h=15" />
-
-</div>
+I enjoy creating projects that combine clean design, smooth interactions, and practical functionality.  
+My goal is to continuously improve my skills while building experiences that look modern and feel intuitive.
 
 ---
 
-# 📈 Contribution Activity
+# ✨ Currently Exploring
 
 <div align="center">
 
-[![William's github activity graph](https://github-readme-activity-graph.vercel.app/graph?username=williamkery2009&theme=tokyo-night&hide_border=true)](https://github.com/williamkery2009)
+```yaml
+Frontend Engineering:
+  - React Ecosystem
+  - Modern UI Architecture
+  - Responsive Design Systems
 
-</div>
+Creative Development:
+  - Interactive Interfaces
+  - Smooth Animations
+  - User Experience Design
 
----
-
-# 🚀 Development Journey
-
-<div align="center">
-
-```txt
-Building modern projects
-Learning advanced technologies
-Exploring creative UI/UX concepts
-Improving every single day
+Learning Journey:
+  - Building real-world projects
+  - Improving problem-solving
+  - Exploring new technologies
 
 </div>---
 
 🤝 Let's Connect
 
-<div align="center">I enjoy connecting with developers, designers, and creative minds who are passionate about building meaningful digital experiences.
+<div align="center">I enjoy connecting with developers, designers, and creative people who are passionate about technology and digital experiences.
 
-Whether it's discussing ideas, collaborating on projects, or exploring technology — I'm always open to learning and growing together.
+Whether it’s collaboration, learning, or sharing ideas — I’m always open to meaningful conversations 🚀
 
 </div>---
 
 <div align="center">⭐ Thanks for visiting my profile
 
-<img src="https://readme-jokes.vercel.app/api?theme=tokyonight" alt="Jokes Card" /><br/><br/>
-
-“Create with passion. Build with purpose.”
+<br/>“Create with passion. Build with purpose.”
 
 </div>
 ```
