@@ -1,121 +1,151 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:8A2BE2,100:00BFFF&height=220&section=header&text=William%20Kery&fontSize=42&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Student%20•%20Developer%20•%20Tech%20Explorer&descAlignY=58&descSize=18" width="100%" />
+<img src="https://capsule-render.vercel.app/api?type=waving&height=260&color=0:6C63FF,50:8A2BE2,100:00BFFF&text=William%20Kery&fontSize=50&fontAlignY=38&fontColor=ffffff&animation=fadeIn&desc=Student%20•%20Developer%20•%20Creative%20Builder&descAlignY=58&descSize=20" width="100%" />
 
-![](https://komarev.com/ghpvc/?username=williamkery2009&color=blueviolet&style=for-the-badge)
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=williamkery2009&label=Profile%20Views&color=8A2BE2&style=for-the-badge" />
+</p>
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&pause=1000&color=8A2BE2&center=true&vCenter=true&width=700&lines=Student+%26+Developer;Building+creative+apps+and+UI;Android+Customization+Enthusiast;Always+learning+new+technologies)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&pause=1200&color=8A2BE2&center=true&vCenter=true&width=750&lines=Student+%26+Self-Taught+Developer;Building+beautiful+digital+experiences;UI%2FUX+Lover+%7C+Android+Customizer;Learning+something+new+every+day;Turning+ideas+into+real+projects)](https://git.io/typing-svg)
 
 </div>
 
 ---
 
-# 🌟 About Me
+# 👋 Hey, I'm William
 
-Hi 👋 I'm **William Kery**, a passionate **Student & Developer** from India who enjoys building modern apps, experimenting with UI/UX, and exploring new technologies.
+I'm a student developer from India who genuinely enjoys building things that feel modern, smooth, and creative.
 
-I'm currently focused on improving my skills in app development, Android customization, frontend engineering, and creative digital experiences. I enjoy turning ideas into polished projects and constantly learning through real-world building.
+Most of my time goes into experimenting with UI/UX, customizing Android experiences, improving frontend skills, and turning random ideas into actual working projects. I love exploring new technologies, polishing interfaces, and learning by creating real stuff instead of only watching tutorials.
 
-### ⚡ About Me
-
-- 🚀 Passionate about modern UI/UX and app experiences
-- 📱 Love Android customization and creative projects
-- 💻 Exploring web development and frontend technologies
-- 🎯 Focused on improving coding and design skills every day
-- ☕ Late-night coding sessions are my thing
-- 🌍 Always curious about new tech and innovations
+For me, coding isn't just about functionality — it's about making something that *feels good* to use.
 
 ---
 
-# 💻 Tech Stack
+## 🧠 A Few Things About Me
+
+- 🚀 Currently exploring app development & modern frontend design
+- 📱 Big fan of Android customization and clean mobile interfaces
+- 🎨 Obsessed with animations, aesthetics, and smooth UI experiences
+- 🌙 Usually coding late at night with music on
+- ⚡ I enjoy rebuilding and upgrading existing apps creatively
+- 🎯 Focused on improving every single day
+
+---
+
+# ⚒️ Tech Arsenal
+
+<div align="center">
 
 ## 🎨 Frontend
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Next JS](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+<img src="https://skillicons.dev/icons?i=html,css,js,ts,react,nextjs,tailwind" />
+
+---
 
 ## ⚙️ Backend & Database
 
-![NodeJS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
-![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)
-![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+<img src="https://skillicons.dev/icons?i=nodejs,express,python,firebase,mongodb" />
+
+---
 
 ## 🛠️ Tools & Platforms
 
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
-![VS Code](https://img.shields.io/badge/VS_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)
-![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-
----
-
-# 🌐 Connect With Me
-
-[![YouTube](https://img.shields.io/badge/YouTube-Visit-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com/@williamkery2009)
-
-[![Medium](https://img.shields.io/badge/Medium-Read-black?style=for-the-badge&logo=medium&logoColor=white)](https://medium.com/@williamkery2009)
-
-[![Instagram](https://img.shields.io/badge/Instagram-Follow-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/williamkery2009)
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/williamkery2009)
-
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-success?style=for-the-badge&logo=google-chrome&logoColor=white)](https://github.com/williamkery2009)
-
----
-
-# 📊 GitHub Analytics
-
-<div align="center">
-
-<img height="180em" src="https://github-readme-stats.vercel.app/api?username=williamkery2009&show_icons=true&theme=tokyonight&hide_border=true&count_private=true"/>
-
-<img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=williamkery2009&layout=compact&theme=tokyonight&hide_border=true"/>
-
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=williamkery2009&theme=tokyonight&hide_border=true" />
+<img src="https://skillicons.dev/icons?i=git,github,vscode,figma,linux,androidstudio" />
 
 </div>
 
 ---
 
-# 🏆 GitHub Trophies
+# 🌐 Find Me Online
 
 <div align="center">
 
-<img src="https://github-profile-trophy.vercel.app/?username=williamkery2009&theme=onedark&no-frame=true&margin-w=15&margin-h=15" />
+<a href="https://youtube.com/@williamkery2009">
+  <img src="https://img.shields.io/badge/YouTube-WilliamKery-red?style=for-the-badge&logo=youtube&logoColor=white"/>
+</a>
+
+<a href="https://instagram.com/williamkery2009">
+  <img src="https://img.shields.io/badge/Instagram-@williamkery2009-E4405F?style=for-the-badge&logo=instagram&logoColor=white"/>
+</a>
+
+<a href="https://medium.com/@williamkery2009">
+  <img src="https://img.shields.io/badge/Medium-Articles-black?style=for-the-badge&logo=medium&logoColor=white"/>
+</a>
+
+<a href="https://github.com/williamkery2009">
+  <img src="https://img.shields.io/badge/Portfolio-GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/>
+</a>
 
 </div>
 
 ---
 
-# 📈 Contribution Graph
-
-[![William's github activity graph](https://github-readme-activity-graph.vercel.app/graph?username=williamkery2009&theme=tokyo-night)](https://github.com/williamkery2009)
-
----
-
-# ✨ Let's Build Something Amazing Together
+# 📊 GitHub Stats
 
 <div align="center">
 
-### 💬 Open to collaborations, creative projects, and learning opportunities.
+<img width="49%" src="https://github-readme-stats.vercel.app/api?username=williamkery2009&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0D1117&title_color=8A2BE2&icon_color=00BFFF" />
 
-📫 Feel free to connect with me and explore my journey 🚀
+<img width="49%" src="https://github-readme-stats.vercel.app/api/top-langs/?username=williamkery2009&layout=compact&theme=tokyonight&hide_border=true&bg_color=0D1117&title_color=8A2BE2" />
+
+</div>
+
+<div align="center">
+
+<img width="98%" src="https://github-readme-streak-stats.herokuapp.com/?user=williamkery2009&theme=tokyonight&hide_border=true&background=0D1117&stroke=8A2BE2&ring=8A2BE2&fire=00BFFF&currStreakLabel=FFFFFF" />
 
 </div>
 
 ---
 
+# 🏆 Achievements
+
 <div align="center">
 
-⭐ From [William Kery](https://github.com/williamkery2009)
+<img src="https://github-profile-trophy.vercel.app/?username=williamkery2009&theme=onestar&no-frame=true&row=1&column=6&margin-w=15&margin-h=15" />
 
 </div>
+
+---
+
+# 📈 Contribution Activity
+
+<div align="center">
+
+[![William's github activity graph](https://github-readme-activity-graph.vercel.app/graph?username=williamkery2009&theme=tokyo-night&hide_border=true)](https://github.com/williamkery2009)
+
+</div>
+
+---
+
+# ✨ Current Goals
+
+```txt
+→ Build more polished real-world projects
+→ Improve app UI/UX skills
+→ Learn advanced frontend engineering
+→ Explore AI-powered applications
+→ Grow as a creator and developer
+
+---
+
+🤝 Let's Connect
+
+<div align="center">I’m always interested in:
+
+- creative collaborations
+- cool project ideas
+- app/UI discussions
+- learning new things with other developers
+
+Sometimes one conversation can lead to something amazing 🚀
+
+</div>---
+
+<div align="center">⭐ Thanks for visiting my profile
+
+"Stay creative. Keep building."
+
+</div>
+```
